@@ -16,9 +16,6 @@
 package config
 
 import (
-	//"errors"
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -29,9 +26,13 @@ var Cmd = &cobra.Command{
 	Long:  `Manage Insight CLI config settings`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if cmd.Flags().Changed("add") {
-			fmt.Printf("add is set, delegating to SetArgs...\n")
 			CmdAdd.SetArgs(args)
 			return CmdAdd.Execute()
+		}
+
+		if cmd.Flags().Changed("validate") {
+			CmdValidate.SetArgs(args)
+			return CmdValidate.Execute()
 		}
 
 		numArgs := len(args)
@@ -47,5 +48,5 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.Flags().BoolP("add", "a", false, "name")
-	//configCmd.Flags().BoolP("validate", "", false, "validate your configuration")
+	Cmd.Flags().BoolP("validate", "", false, "validate your configuration")
 }
