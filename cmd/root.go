@@ -23,6 +23,8 @@ import (
 	"github.com/spf13/viper"
 
 	config "github.com/davidalpert/ginsight/cmd/config"
+	create "github.com/davidalpert/ginsight/cmd/create"
+	update "github.com/davidalpert/ginsight/cmd/update"
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -75,6 +77,8 @@ func init() {
 
 	// Register subcommands
 	rootCmd.AddCommand(config.Cmd)
+	rootCmd.AddCommand(create.Cmd)
+	rootCmd.AddCommand(update.Cmd)
 }
 
 // initConfig reads in config file and ENV variables if set.
