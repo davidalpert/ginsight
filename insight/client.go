@@ -96,3 +96,37 @@ func BuildClient(config *ClientConfiguration) (*Client, error) {
 
 	return insightClient, nil
 }
+
+func validateResponseCodeExact(response *resty.Response, expectedStatusCode int) error {
+	statusCode := response.StatusCode()
+	if statusCode != expectedStatusCode {
+		return &ClientError{Response: response}
+	}
+	return nil
+}
+
+func validateResponseCodeInRange(response *resty.Response, lowInclusive int, highExclusive int) error {
+	statusCode := response.StatusCode()
+	if statusCode < lowInclusive || highExclusive <= statusCode {
+		return &ClientError{Response: response}
+	}
+	return nil
+}
+
+/*
+func getAndValidate(req *resty.Request, url string, lowInclusive int, highExclusive int) (*resty.Response, error) {
+	response, err := req.Get(url)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		return nil, err
+	}
+
+	statusCode := response.StatusCode()
+	if statusCode < lowInclusive || highExclusive <= statusCode {
+		clientError := &ClientError{Response: response}
+		return nil, clientError
+	}
+
+	return response, nil
+}
+*/
