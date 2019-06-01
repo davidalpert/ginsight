@@ -24,6 +24,8 @@ import (
 
 	config "github.com/davidalpert/ginsight/cmd/config"
 	create "github.com/davidalpert/ginsight/cmd/create"
+	delete "github.com/davidalpert/ginsight/cmd/delete"
+	get "github.com/davidalpert/ginsight/cmd/get"
 	update "github.com/davidalpert/ginsight/cmd/update"
 )
 
@@ -78,6 +80,8 @@ func init() {
 	// Register subcommands
 	rootCmd.AddCommand(config.Cmd)
 	rootCmd.AddCommand(create.Cmd)
+	rootCmd.AddCommand(delete.Cmd)
+	rootCmd.AddCommand(get.Cmd)
 	rootCmd.AddCommand(update.Cmd)
 }
 

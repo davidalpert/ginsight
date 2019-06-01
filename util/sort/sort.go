@@ -4,6 +4,12 @@ import (
 	insight "github.com/davidalpert/ginsight/insight"
 )
 
+type ByObjectSchemaKey []insight.ObjectSchema
+
+func (s ByObjectSchemaKey) Len() int           { return len(s) }
+func (s ByObjectSchemaKey) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s ByObjectSchemaKey) Less(i, j int) bool { return s[i].Key < s[j].Key }
+
 type ByObjectTypeName []insight.ObjectType
 
 func (s ByObjectTypeName) Len() int           { return len(s) }

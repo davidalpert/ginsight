@@ -45,3 +45,24 @@ func WriteObjectTypeHeader(t table.Writer, schemaTagType string) {
 func WriteObjectTypeRow(t table.Writer, schemaTag string, objectType *insight.ObjectType) {
 	t.AppendRow([]interface{}{schemaTag, objectType.ID, objectType.Name, objectType.Description, objectType.ParentObjectTypeID, objectType.Inherited, objectType.AbstractObjectType})
 }
+
+func WriteObjectSchemasAsTable(schemaList *insight.ObjectSchemaList) {
+	schemas := schemaList.Schemas
+	sort.Sort(sortStrategies.ByObjectSchemaKey(schemas))
+
+	fmt.Printf("\nInsight Object Schemas found in %s\n\n", insight.DefaultClient().BaseURL)
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Id", "Key", "Name", "Description", "# of Object Types", "# of Objects"})
+	for _, schema := range schemaList.Schemas {
+		t.AppendRow([]interface{}{schema.ID, schema.Key, schema.Name, schema.Description, schema.ObjectTypeCount, schema.ObjectCount})
+	}
+	t.Render()
+
+	fmt.Println()
+}
+
+func WriteObjectSchemaDetail(schema *insight.ObjectSchema) {
+	fmt.Printf("\nFound schema: %s | %s | %s\n\n", schema.Key, schema.Name, schema.Description)
+}
