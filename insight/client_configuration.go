@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Configuration properties for an insight.Client
+// ClientConfiguration provides properties to configure an insight.Client
 type ClientConfiguration struct {
 	BaseURL  string
 	Username string
@@ -15,7 +15,7 @@ type ClientConfiguration struct {
 	Insecure bool
 }
 
-// Validates a ClientConfiguration, creating a new value if the pointer is
+// ValidateProperties validates a ClientConfiguration, creating a new value if the pointer is nil
 func (c *ClientConfiguration) ValidateProperties() error {
 	if c == nil {
 		// set the config pointer to the address of a newly
@@ -36,7 +36,7 @@ func (c *ClientConfiguration) ValidateProperties() error {
 	return nil
 }
 
-// Returns the default ClientConfiguration, based on viper's patterns of file -> env -> flags
+// DefaultClientConfiguration returns the default ClientConfiguration, based on viper's patterns of file -> env -> flags
 func DefaultClientConfiguration() *ClientConfiguration {
 	return &ClientConfiguration{
 		BaseURL:  viper.GetString("jira.base_url"),

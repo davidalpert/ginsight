@@ -8,32 +8,35 @@ import (
 
 // -----------------------------------------------
 
-// Represents an Insight API Client error
+// ClientError wraps a restyResponse
 type ClientError struct {
 	Response *resty.Response
 }
 
-// Implements the error interface
+// Error provides the error response as a string
 func (e *ClientError) Error() string {
 	if e.Response.StatusCode() == 403 {
 		return string("403 Unauthorized")
 	}
-	return string(e.Response.String())
+	return fmt.Sprintf("%d %s\n", e.Response.StatusCode(), e.Response.String())
 }
 
 // -----------------------------------------------
 
+// ObjectSchemaNotFoundError represents a schema not found
 type ObjectSchemaNotFoundError struct {
 	SearchTerm  string
 	Suggestions []string
 }
 
+// Error provides the error response as a string
 func (e ObjectSchemaNotFoundError) Error() string {
 	return fmt.Sprintf("Did not find schema '%s'\n\nAre you looking for one of these schemas? %s\n", e.SearchTerm, e.Suggestions)
 }
 
 // -----------------------------------------------
 
+// ObjectTypeNotFoundError represents an ObjectType not found
 type ObjectTypeNotFoundError struct {
 	SearchTerm       string
 	SchemaIdentifier string
@@ -46,6 +49,7 @@ func (e ObjectTypeNotFoundError) Error() string {
 
 // -----------------------------------------------
 
+// MultipleObjectTypesFoundError represents multiple types found when we expected only a single type
 type MultipleObjectTypesFoundError struct {
 	SchemaID       string
 	ObjectTypeName string

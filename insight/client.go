@@ -9,6 +9,7 @@ import (
 	resty "gopkg.in/resty.v1"
 )
 
+// Client represents a Jira Insight API client
 type Client struct {
 	BaseURL  string
 	Username string
@@ -22,11 +23,11 @@ type Client struct {
 	*resty.Client
 }
 
-// Applies ClientConfiguration to a Client, configuring the Resty client underneath
+// Configure applies a ClientConfiguration to a Client, also configuring the Resty client underneath
 func (c *Client) Configure(config *ClientConfiguration) error {
-	configErr := config.ValidateProperties()
-	if configErr != nil {
-		return configErr
+	err := config.ValidateProperties()
+	if err != nil {
+		return err
 	}
 
 	// ensure that our client's Client property has a value
@@ -58,7 +59,7 @@ func (c *Client) Configure(config *ClientConfiguration) error {
 
 var defaultInsightClient *Client
 
-// Exposes (or creates) a default insight.Client
+// DefaultClient exposes (or creates) a default insight.Client
 func DefaultClient() *Client {
 	if defaultInsightClient == nil {
 		client, err := BuildClient(DefaultClientConfiguration())
@@ -72,15 +73,16 @@ func DefaultClient() *Client {
 	return defaultInsightClient
 }
 
+// SetDefaultClient allows setting the default insight.Client if needed
 func SetDefaultClient(c *Client) {
 	defaultInsightClient = c
 }
 
-// Builds a new instance of an Insight API Client
+// BuildClient builds a new instance of an Insight API Client
 func BuildClient(config *ClientConfiguration) (*Client, error) {
-	configErr := config.ValidateProperties()
-	if configErr != nil {
-		return nil, configErr
+	err := config.ValidateProperties()
+	if err != nil {
+		return nil, err
 	}
 
 	if config.Debug {

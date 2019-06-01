@@ -26,8 +26,8 @@ func (c *Client) updateObjectTypePosition(objectTypeID string, body map[string]i
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectType), nil

@@ -74,9 +74,9 @@ func createType(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Looking up ObjectSchema by key: %s ... ", objectSchemaKey)
 	client := insight.DefaultClient()
 
-	schema, schemaErr := client.GetObjectSchemaByKey(objectSchemaKey)
-	if schemaErr != nil {
-		return schemaErr
+	schema, err := client.GetObjectSchemaByKey(objectSchemaKey)
+	if err != nil {
+		return err
 	}
 
 	fmt.Printf("found it!\n")
@@ -84,9 +84,9 @@ func createType(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("parent-type-name") {
 		fmt.Printf("Looking up ObjectType by name '%s' in schema %s (%d) ... ", objectTypeParentObjectTypeName, objectSchemaKey, schema.ID)
 
-		parentObjectTypes, typeErr := client.GetObjectTypesByNameFromSchemaID(strconv.Itoa(schema.ID), objectTypeParentObjectTypeName)
-		if typeErr != nil {
-			return typeErr
+		parentObjectTypes, err := client.GetObjectTypesByNameFromSchemaID(strconv.Itoa(schema.ID), objectTypeParentObjectTypeName)
+		if err != nil {
+			return err
 		}
 
 		if len(*parentObjectTypes) != 1 {

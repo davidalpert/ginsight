@@ -36,8 +36,8 @@ func (c *Client) GetObjectSchemas() (*ObjectSchemaList, error) {
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return nil, statusErr
+	if err = validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
 	}
 
 	schemaList := response.Result().(*ObjectSchemaList)
@@ -56,8 +56,8 @@ func (c *Client) GetObjectSchemaById(id string) (*ObjectSchema, error) {
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectSchema), nil
@@ -70,8 +70,8 @@ func (c *Client) CreateSchema(body *ObjectSchemaCreateUpdateRequest) (*ObjectSch
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 201); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectSchema), nil
@@ -84,8 +84,8 @@ func (c *Client) UpdateSchema(objectSchemaId string, body *ObjectSchemaCreateUpd
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectSchema), nil
@@ -95,8 +95,8 @@ func (c *Client) UpdateSchema(objectSchemaId string, body *ObjectSchemaCreateUpd
 func (c *Client) DeleteSchema(objectSchemaId string) error {
 	response, err := c.R().Delete(c.BaseURL + "/rest/insight/1.0/objectschema/" + objectSchemaId)
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return err
 	}
 
 	return err
@@ -106,9 +106,9 @@ func (c *Client) DeleteSchema(objectSchemaId string) error {
 
 // Get Schema by KEY
 func (c *Client) GetObjectSchemaByKey(key string) (*ObjectSchema, error) {
-	response, objectSchemasErr := c.GetObjectSchemas()
-	if objectSchemasErr != nil {
-		return nil, objectSchemasErr
+	response, err := c.GetObjectSchemas()
+	if err != nil {
+		return nil, err
 	}
 
 	suggestions := []string{} // just in case

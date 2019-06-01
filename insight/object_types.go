@@ -61,8 +61,8 @@ func (c *Client) GetObjectTypesForSchemaID(schemaID string) (*[]ObjectType, erro
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*[]ObjectType), nil
@@ -92,8 +92,8 @@ func (c *Client) GetObjectTypeByID(id string) (*ObjectType, error) {
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectType), nil
@@ -160,8 +160,8 @@ func (c *Client) CreateObjectType(body *ObjectTypeCreateRequest) (*ObjectType, e
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 201); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectType), nil
@@ -173,8 +173,8 @@ func (c *Client) UpdateObjectType(objectTypeID string, body *ObjectTypeUpdateReq
 		return nil, err
 	}
 
-	if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
-		return nil, statusErr
+	if err := validateResponseCodeExact(response, 201); err != nil {
+		return nil, err
 	}
 
 	return response.Result().(*ObjectType), nil
@@ -183,8 +183,8 @@ func (c *Client) UpdateObjectType(objectTypeID string, body *ObjectTypeUpdateReq
 func (c *Client) DeleteObjectType(objectTypeID string) error {
 	response, err := c.R().Delete(c.BaseURL + "/rest/insight/1.0/objecttype/" + objectTypeID)
 
-	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return statusErr
+	if err := validateResponseCodeExact(response, 200); err != nil {
+		return err
 	}
 
 	return err
