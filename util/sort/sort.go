@@ -21,3 +21,9 @@ type ByObjectTypeAttributeName []insight.ObjectTypeAttribute
 func (s ByObjectTypeAttributeName) Len() int           { return len(s) }
 func (s ByObjectTypeAttributeName) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s ByObjectTypeAttributeName) Less(i, j int) bool { return s[i].Name < s[j].Name }
+
+type ByObjectTypeAttributeID []insight.ObjectTypeAttribute
+
+func (s ByObjectTypeAttributeID) Len() int           { return len(s) }
+func (s ByObjectTypeAttributeID) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s ByObjectTypeAttributeID) Less(i, j int) bool { return s[i].ID < s[j].ID }

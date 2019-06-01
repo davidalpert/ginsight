@@ -53,4 +53,7 @@ func init() {
 
 	// Subcommands
 	Cmd.AddCommand(CmdGetSchemas)
+	Cmd.AddCommand(CmdGetType)
+	Cmd.AddCommand(CmdGetTypes)
+	Cmd.AddCommand(CmdGetAttributes)
 }

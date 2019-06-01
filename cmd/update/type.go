@@ -58,19 +58,25 @@ Creates a new ObjectType in a JIRA Insight ObjectSchema
 }
 
 func init() {
+	CmdUpdateType.Flags().StringVar(&objectTypeName, "new-name", "", "allows updating the name")
 	CmdUpdateType.Flags().StringVarP(&objectTypeDescription, "description", "l", "", "description of the object type to create")
 	CmdUpdateType.Flags().StringVarP(&objectTypeParentObjectTypeName, "parent-type-name", "p", "", "name of the parent object type")
 	CmdUpdateType.Flags().IntVarP(&objectTypeParentObjectTypeID, "parent-type-id", "P", -1, "id of the parent object type")
 	CmdUpdateType.Flags().IntVarP(&objectTypeIconID, "icon-id", "i", 1, "id of the icon") // icon is required, 1-indexed, so 1 is the default iconId
+	//CmdUpdateType.Flags().MarkHidden("new-name")
 }
 
 func updateType(cmd *cobra.Command, args []string) error {
 	typeIdentifier := args[0] // guaranteed by 'Args: cobra.ExactArgs(1)'
 
 	typeUpdate := insight.ObjectTypeUpdateRequest{
-		Name:        objectTypeName,
+		Name:        typeIdentifier,
 		Description: objectTypeDescription,
 		IconID:      objectTypeIconID,
+	}
+
+	if cmd.Flags().Changed("new-name") {
+		typeUpdate.Name = objectTypeName // use the new name
 	}
 
 	if _, err := strconv.Atoi(typeIdentifier); err != nil {
@@ -103,7 +109,7 @@ func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, 
 	if len(*foundTypes) > 1 {
 		return &insight.MultipleObjectTypesFoundError{
 			SchemaID:       schemaKey,
-			ObjectTypeName: objectTypeName,
+			ObjectTypeName: typeIdentifier,
 			FoundTypes:     foundTypes,
 		}
 	}
@@ -117,16 +123,21 @@ func updateObjectTypeByIdInSchemaKey(schemaKey string, typeIdentifier string, up
 	if insight.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectType by Id '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
+
 	objectType, err := insight.DefaultClient().GetObjectTypeByID(typeIdentifier)
 	if err != nil {
 		return err
+	}
+
+	// don't change the name when we looked it up by ID and haven't set the name to something new
+	if update.Name == typeIdentifier {
+		update.Name = objectType.Name
 	}
 
 	return applyUpdates(schemaKey, objectType, update)
 }
 
 func applyUpdates(schemaKey string, objectType *insight.ObjectType, update *insight.ObjectTypeUpdateRequest) error {
-
 	updatedObjectType, err := insight.DefaultClient().UpdateObjectType(strconv.Itoa(objectType.ID), update)
 	if err != nil {
 		return err

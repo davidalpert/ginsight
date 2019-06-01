@@ -135,7 +135,7 @@ var _ = Describe("Client", func() {
 					Expect(err).To(Not(BeNil()))
 					clientError := insight.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
-					Expect(err.Error()).To(Equal("400 "+fixture+"\n"))
+					Expect(err.Error()).To(Equal("400 " + fixture + "\n"))
 				})
 			})
 		})
@@ -185,7 +185,7 @@ var _ = Describe("Client", func() {
 					Expect(err).To(Not(BeNil()))
 					clientError := insight.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
-					Expect(err.Error()).To(Equal("404 "+fixture+"\n"))
+					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
 				})
 			})
 		})
@@ -280,7 +280,7 @@ var _ = Describe("Client", func() {
 					Expect(err).To(Not(BeNil()))
 					clientError := insight.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
-					Expect(err.Error()).To(Equal("404 "+fixture+"\n"))
+					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
 				})
 			})
 		})
@@ -335,7 +335,7 @@ var _ = Describe("Client", func() {
 					Expect(err).To(Not(BeNil()))
 					clientError := insight.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
-					Expect(err.Error()).To(Equal("404 "+fixture+"\n"))
+					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
 				})
 			})
 		})

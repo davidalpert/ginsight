@@ -101,13 +101,13 @@ type ObjectTypeUserAttributeCreateRequest struct {
 	AdditionalValue string   `json:"additionalValue"` // SHOW_PROFILE, HIDE_PROFILE
 }
 
-func (c *Client) GetObjectTypeAttributesForSchemaID(objectSchemaID string) ([]ObjectTypeAttribute, error) {
+func (c *Client) GetObjectTypeAttributesForSchemaID(objectSchemaID string) (*[]ObjectTypeAttribute, error) {
 	var result []ObjectTypeAttribute
 	response, err := c.R().SetResult(&result).Get(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objectschema/%s/attributes", objectSchemaID))
 	if err != nil {
-		return []ObjectTypeAttribute{}, err
+		return nil, err
 	}
-	return *(response.Result().(*[]ObjectTypeAttribute)), nil
+	return response.Result().(*[]ObjectTypeAttribute), nil
 }
 
 func (c *Client) GetObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[]ObjectTypeAttribute, error) {
