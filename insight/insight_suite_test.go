@@ -32,11 +32,11 @@ var _ = BeforeSuite(func() {
 		Username: "mal",
 		Password: "serenity",
 		Debug:    false, // toggle true to see Resty and other logs
-  }
+	}
 
-  if client, err := insight.BuildClient(&clientConfiguration); err == nil {
-    testClient = client 
-  }
+	if client, err := insight.BuildClient(&clientConfiguration); err == nil {
+		testClient = client
+	}
 
 	// block all HTTP requests
 	httpmock.Activate()

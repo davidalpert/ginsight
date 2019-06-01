@@ -85,16 +85,16 @@ func (c *Client) GetObjectTypesForSchemaKey(key string) (*[]ObjectType, error) {
 func (c *Client) GetObjectTypeByID(id string) (*ObjectType, error) {
 	if c.Debug {
 		log.Println("GetObjectTypeByID")
-  }
+	}
 
 	response, err := c.R().SetResult(&ObjectType{}).Get(c.BaseURL + "/rest/insight/1.0/objecttype/" + id)
 	if err != nil {
 		return nil, err
-  }
-  
-  if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
-		return statusErr
-  }
+	}
+
+	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
+		return nil, statusErr
+	}
 
 	return response.Result().(*ObjectType), nil
 }
@@ -154,38 +154,38 @@ func (c *Client) lookupObjectTypesByName(schemaIdentifier string, objectTypes *[
 	return &foundTypes, nil
 }
 
-func (c *Client) CreateObjectType(body *ObjectTypeCreateRequest) (ObjectType, error) {
+func (c *Client) CreateObjectType(body *ObjectTypeCreateRequest) (*ObjectType, error) {
 	response, err := c.R().SetBody(body).SetResult(&ObjectType{}).Post(c.BaseURL + "/rest/insight/1.0/objecttype/create")
 	if err != nil {
-		return ObjectType{}, err
-  }
+		return nil, err
+	}
 
-  if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
-		return statusErr
-  }
+	if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
+		return nil, statusErr
+	}
 
-	return *(response.Result().(*ObjectType)), nil
+	return response.Result().(*ObjectType), nil
 }
 
-func (c *Client) UpdateObjectType(objectTypeID string, body *ObjectTypeUpdateRequest) (ObjectType, error) {
+func (c *Client) UpdateObjectType(objectTypeID string, body *ObjectTypeUpdateRequest) (*ObjectType, error) {
 	response, err := c.R().SetBody(body).SetResult(&ObjectType{}).Put(c.BaseURL + "/rest/insight/1.0/objecttype/" + objectTypeID)
 	if err != nil {
-		return ObjectType{}, err
-  }
+		return nil, err
+	}
 
-  if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
-		return statusErr
-  }
+	if statusErr := validateResponseCodeExact(response, 201); statusErr != nil {
+		return nil, statusErr
+	}
 
-	return *(response.Result().(*ObjectType)), nil
+	return response.Result().(*ObjectType), nil
 }
 
 func (c *Client) DeleteObjectType(objectTypeID string) error {
-  response, err := c.R().Delete(c.BaseURL + "/rest/insight/1.0/objecttype/" + objectTypeID)
+	response, err := c.R().Delete(c.BaseURL + "/rest/insight/1.0/objecttype/" + objectTypeID)
 
-  if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
+	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
 		return statusErr
-  }
+	}
 
 	return err
 }
@@ -220,7 +220,5 @@ func (c *Client) deleteObjectTypeByNameInSchema(schemaIdentifier string, objectT
 	objectType := (*foundTypes)[0]
 
 	fmt.Printf("Deleting ObjectType %s (%d) ...", objectType.Name, objectType.ID)
-	deleteErr := c.DeleteObjectType(fmt.Sprintf("%d", objectType.ID))
-
-	return deleteErr
+	return c.DeleteObjectType(fmt.Sprintf("%d", objectType.ID))
 }

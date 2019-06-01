@@ -93,11 +93,11 @@ func (c *Client) UpdateSchema(objectSchemaId string, body *ObjectSchemaCreateUpd
 
 // Delete an ObjectSchema
 func (c *Client) DeleteSchema(objectSchemaId string) error {
-  response, err := c.R().Delete(c.BaseURL + "/rest/insight/1.0/objectschema/" + objectSchemaId)
+	response, err := c.R().Delete(c.BaseURL + "/rest/insight/1.0/objectschema/" + objectSchemaId)
 
 	if statusErr := validateResponseCodeExact(response, 200); statusErr != nil {
 		return statusErr
-  }
+	}
 
 	return err
 }

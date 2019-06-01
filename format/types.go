@@ -11,7 +11,7 @@ import (
 	sortStrategies "github.com/davidalpert/ginsight/util/sort"
 )
 
-func WriteObjectType(schemaTagType string, schemaTag string, objectType insight.ObjectType) {
+func WriteObjectType(schemaTagType string, schemaTag string, objectType *insight.ObjectType) {
 	fmt.Printf("\nInsight ObjectType '%d' found for \"%s\"\n\n", objectType.ID, schemaTag)
 
 	t := table.NewWriter()
@@ -22,16 +22,16 @@ func WriteObjectType(schemaTagType string, schemaTag string, objectType insight.
 	fmt.Println()
 }
 
-func WriteObjectTypes(schemaTagType string, schemaTag string, objectTypes []insight.ObjectType) {
+func WriteObjectTypes(schemaTagType string, schemaTag string, objectTypes *[]insight.ObjectType) {
 	fmt.Printf("\nInsight ObjectTypes found for \"%s\"\n\n", schemaTag)
 
-	sort.Sort(sortStrategies.ByObjectTypeName(objectTypes))
+	sort.Sort(sortStrategies.ByObjectTypeName(*objectTypes))
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	WriteObjectTypeHeader(t, schemaTagType)
-	for _, objectType := range objectTypes {
-		WriteObjectTypeRow(t, schemaTag, objectType)
+	for _, objectType := range *objectTypes {
+		WriteObjectTypeRow(t, schemaTag, &objectType)
 	}
 	t.Render()
 
@@ -42,6 +42,6 @@ func WriteObjectTypeHeader(t table.Writer, schemaTagType string) {
 	t.AppendHeader(table.Row{schemaTagType, "Id", "Name", "Description", "ParentObjectTypeID", "Inherited", "Abstract"})
 }
 
-func WriteObjectTypeRow(t table.Writer, schemaTag string, objectType insight.ObjectType) {
+func WriteObjectTypeRow(t table.Writer, schemaTag string, objectType *insight.ObjectType) {
 	t.AppendRow([]interface{}{schemaTag, objectType.ID, objectType.Name, objectType.Description, objectType.ParentObjectTypeID, objectType.Inherited, objectType.AbstractObjectType})
 }
