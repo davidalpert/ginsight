@@ -52,5 +52,5 @@ func init() {
 
 	// Subcommands
 	Cmd.AddCommand(CmdCreateType)
-	//Cmd.AddCommand(CmdCreateTypeAttribute)
+	Cmd.AddCommand(CmdCreateTypeAttribute)
 }

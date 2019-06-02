@@ -95,10 +95,11 @@ type ObjectTypeObjectAttributeCreateRequest struct {
 }
 
 type ObjectTypeUserAttributeCreateRequest struct {
-	Name            string   `json:"name"`
-	Type            string   `json:"type"`
-	TypeValueMulti  []string `json:"typeValueMulti,omitempty"`
-	AdditionalValue string   `json:"additionalValue"` // SHOW_PROFILE, HIDE_PROFILE
+	Name            string `json:"name"`
+	TypeID          int    `json:"type"`
+	AdditionalValue string `json:"additionalValue"` // SHOW_PROFILE, HIDE_PROFILE
+
+	JiraGroups []string `json:"typeValueMulti,omitempty"`
 }
 
 func (c *Client) GetObjectTypeAttributesForSchemaID(objectSchemaID string) (*[]ObjectTypeAttribute, error) {
@@ -121,7 +122,7 @@ func (c *Client) GetObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[
 
 func (c *Client) CreateObjectTypeDefaultAttribute(objectTypeID string, body *ObjectTypeDefaultAttributeCreateRequest) (*ObjectTypeAttribute, error) {
 	response, err := c.R().SetBody(body).SetResult(&ObjectTypeAttribute{}).
-		Post(fmt.Sprintf("/rest/insight/1.0/objecttypeattribute/%s", objectTypeID))
+		Post(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s", objectTypeID))
 	if err != nil {
 		return nil, err
 	}
