@@ -1,0 +1,7 @@
+jira:
+  base_url: "https://jira.example.com"
+  username: "username"
+  password: "password"
+tls:
+  insecure: false
+debug: false
