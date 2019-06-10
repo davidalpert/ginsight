@@ -72,7 +72,10 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ginsight.yaml)")
+	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
+
 	rootCmd.PersistentFlags().BoolVar(&debugSet, "debug", false, "enable debug logging")
+	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 
 	// Cobra also supports local Flags(), which will only run
 	// when this action is called directly.
