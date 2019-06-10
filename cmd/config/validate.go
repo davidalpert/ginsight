@@ -9,10 +9,12 @@ import (
 
 // CmdValidate validates the Jira configuration by requesting info about the configured Jira credentials
 var CmdValidate = &cobra.Command{
-	Use:   "-- validate",
-	Short: "Validate the Insight Client configuration",
-	Args:  cobra.NoArgs,
-	RunE:  validateConfiguration,
+	Use:           "-- validate",
+	Short:         "Validate the Insight Client configuration",
+	Args:          cobra.NoArgs,
+	RunE:          validateConfiguration,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 }
 
 func validateConfiguration(cmd *cobra.Command, args []string) error {
@@ -20,6 +22,7 @@ func validateConfiguration(cmd *cobra.Command, args []string) error {
 
 	client := insight.DefaultClient()
 	me, err := client.GetMe()
+
 	if err != nil {
 		return err
 	}
