@@ -18,6 +18,10 @@ func (c *Client) GetMe() (*JiraMe, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = validateResponseCodeInRange(response, 200, 300)
+	if err != nil {
+		return nil, err
+	}
 
 	jiraUser := response.Result().(*JiraMe) // casts the Result() interface to a pointer-to-JiraMe
 	return jiraUser, nil                    // returns the pointer-to-JiraMe

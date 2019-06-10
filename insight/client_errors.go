@@ -3,7 +3,7 @@ package insight
 import (
 	"fmt"
 
-	"gopkg.in/resty.v1"
+	resty "gopkg.in/resty.v1"
 )
 
 // -----------------------------------------------
@@ -15,6 +15,9 @@ type ClientError struct {
 
 // Implements the error interface
 func (e *ClientError) Error() string {
+	if e.Response.StatusCode() == 403 {
+		return string("403 Unauthorized")
+	}
 	return string(e.Response.String())
 }
 
