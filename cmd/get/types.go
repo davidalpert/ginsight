@@ -19,8 +19,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	"github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 // SchemasCmd represents the get command
@@ -37,7 +37,7 @@ Retreives a list of ObjectTypes from the Insight API.
 func getTypesBySchemaKey(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Looking up ObjectTypes for ObjectSchema '%s' ...\n", objectSchemaKey)
 
-	objectTypes, err := insight.DefaultClient().GetObjectTypesForSchemaKey(objectSchemaKey)
+	objectTypes, err := api.DefaultClient().GetObjectTypesForSchemaKey(objectSchemaKey)
 	if err != nil {
 		return err
 	}

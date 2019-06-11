@@ -1,4 +1,4 @@
-package insight
+package api
 
 // JiraMe models the response of Jira's /rest/api/2/myself endpoint
 type JiraMe struct {

@@ -17,8 +17,8 @@ package get
 import (
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	insightFormat "github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 // SchemasCmd represents the get command
@@ -31,7 +31,7 @@ Retreives a list of ObjectSchemas from the Insight API.
 	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		objectSchemas, err := insight.DefaultClient().GetObjectSchemas()
+		objectSchemas, err := api.DefaultClient().GetObjectSchemas()
 		if err != nil {
 			return err
 		}

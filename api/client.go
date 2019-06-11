@@ -1,4 +1,4 @@
-package insight
+package api
 
 import (
 	"crypto/tls"
@@ -59,7 +59,7 @@ func (c *Client) Configure(config *ClientConfiguration) error {
 
 var defaultInsightClient *Client
 
-// DefaultClient exposes (or creates) a default insight.Client
+// DefaultClient exposes (or creates) a default api.Client
 func DefaultClient() *Client {
 	if defaultInsightClient == nil {
 		client, err := BuildClient(DefaultClientConfiguration())
@@ -73,7 +73,7 @@ func DefaultClient() *Client {
 	return defaultInsightClient
 }
 
-// SetDefaultClient allows setting the default insight.Client if needed
+// SetDefaultClient allows setting the default api.Client if needed
 func SetDefaultClient(c *Client) {
 	defaultInsightClient = c
 }

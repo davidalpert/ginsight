@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	format "github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 // SchemasCmd represents the get command
@@ -52,13 +52,13 @@ func getTypeBySchemaKey(cmd *cobra.Command, args []string) error {
 
 func getTypesByNameInSchemaKey(schemaKey string, typeIdentifier string) error {
 	fmt.Printf("Looking up ObjectTypes by Name '%s' in Schema '%s'\n", typeIdentifier, schemaKey)
-	objectTypes, err := insight.DefaultClient().GetObjectTypesByNameFromSchemaKey(schemaKey, typeIdentifier)
+	objectTypes, err := api.DefaultClient().GetObjectTypesByNameFromSchemaKey(schemaKey, typeIdentifier)
 	if err != nil {
 		return err
 	}
 
 	if len(*objectTypes) <= 0 {
-		return insight.ObjectTypeNotFoundError{
+		return api.ObjectTypeNotFoundError{
 			SearchTerm:       typeIdentifier,
 			SchemaIdentifier: schemaKey,
 			Suggestions: &[]string{
@@ -73,7 +73,7 @@ func getTypesByNameInSchemaKey(schemaKey string, typeIdentifier string) error {
 
 func getTypeByIDInSchemaKey(schemaKey string, typeIdentifier string) error {
 	fmt.Printf("Looking up ObjectType by ID '%s' in Schema '%s'\n", typeIdentifier, schemaKey)
-	objectType, err := insight.DefaultClient().GetObjectTypeByID(typeIdentifier)
+	objectType, err := api.DefaultClient().GetObjectTypeByID(typeIdentifier)
 	if err != nil {
 		return err
 	}

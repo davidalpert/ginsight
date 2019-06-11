@@ -21,8 +21,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	insightFormat "github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 var attributeDescription string
@@ -66,22 +66,22 @@ func createAttribute(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("Creating attribute '%s' on type '%s' in schema '%s'\n", attributeName, objectTypeIdentifier, objectSchemaKey)
 
-	var objectType *insight.ObjectType
+	var objectType *api.ObjectType
 	if _, atoiErr := strconv.Atoi(objectTypeIdentifier); atoiErr == nil {
 		fmt.Printf("Looking up ObjectType ID '%s' in schema '%s'\n", objectTypeIdentifier, objectSchemaKey)
-		foundType, objectTypeErr := insight.DefaultClient().GetObjectTypeByID(objectTypeIdentifier)
+		foundType, objectTypeErr := api.DefaultClient().GetObjectTypeByID(objectTypeIdentifier)
 		if objectTypeErr != nil {
 			return objectTypeErr
 		}
 		objectType = foundType
 	} else {
 		fmt.Printf("Looking up ObjectType ID for '%s' in schema '%s'\n", objectTypeIdentifier, objectSchemaKey)
-		foundTypes, objectTypesErr := insight.DefaultClient().GetObjectTypesByNameFromSchemaKey(objectSchemaKey, objectTypeIdentifier)
+		foundTypes, objectTypesErr := api.DefaultClient().GetObjectTypesByNameFromSchemaKey(objectSchemaKey, objectTypeIdentifier)
 		if objectTypesErr != nil {
 			return objectTypesErr
 		}
 		if len(*foundTypes) > 1 {
-			return &insight.MultipleObjectTypesFoundError{
+			return &api.MultipleObjectTypesFoundError{
 				SchemaID:       objectSchemaKey,
 				ObjectTypeName: objectTypeIdentifier,
 				FoundTypes:     foundTypes,
@@ -91,11 +91,11 @@ func createAttribute(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("Creating the attribute on type %s (%d)\n", objectType.Name, objectType.ID)
-	attributeTypeID := insight.AttributeTypeNameToID(attributeType)
+	attributeTypeID := api.AttributeTypeNameToID(attributeType)
 	switch attributeTypeID {
-	case insight.AttributeTypeIDsByName["default"]:
+	case api.AttributeTypeIDsByName["default"]:
 		return createDefaultAttribute(attributeName, objectType)
-	case insight.AttributeTypeIDsByName["user"]:
+	case api.AttributeTypeIDsByName["user"]:
 		return fmt.Errorf("don't know how to create attributes of type %s\n", attributeType)
 	default:
 		return fmt.Errorf("don't know how to create attributes of type %s\n", attributeType)
@@ -104,17 +104,17 @@ func createAttribute(cmd *cobra.Command, args []string) error {
 	return fmt.Errorf("Creating attributes of type '%s' are not supported.", attributeType)
 }
 
-func createDefaultAttribute(attributeName string, objectType *insight.ObjectType) error {
-	createDefaultAttributeRequest := insight.ObjectTypeDefaultAttributeCreateRequest{
+func createDefaultAttribute(attributeName string, objectType *api.ObjectType) error {
+	createDefaultAttributeRequest := api.ObjectTypeDefaultAttributeCreateRequest{
 		Name:          attributeName,
 		Description:   attributeDescription,
-		TypeID:        insight.AttributeTypeIDsByName["default"],
-		DefaultTypeID: insight.AttributeDefaultTypeIDsByName[attributeDefaultType],
+		TypeID:        api.AttributeTypeIDsByName["default"],
+		DefaultTypeID: api.AttributeDefaultTypeIDsByName[attributeDefaultType],
 	}
 
 	//fmt.Println(createDefaultAttributeRequest)
 
-	attr, err := insight.DefaultClient().CreateObjectTypeDefaultAttribute(strconv.Itoa(objectType.ID), &createDefaultAttributeRequest)
+	attr, err := api.DefaultClient().CreateObjectTypeDefaultAttribute(strconv.Itoa(objectType.ID), &createDefaultAttributeRequest)
 	if err != nil {
 		return err
 	}

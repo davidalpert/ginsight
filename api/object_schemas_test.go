@@ -1,4 +1,4 @@
-package insight_test
+package api_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/jarcoal/httpmock"
 
-	insight "github.com/davidalpert/ginsight/insight"
+	api "github.com/davidalpert/ginsight/api"
 )
 
 var _ = Describe("Client", func() {
@@ -26,7 +26,7 @@ var _ = Describe("Client", func() {
 
 					Expect(err).To(BeNil())
 
-					var sliceOfObjectSchema *insight.ObjectSchemaList
+					var sliceOfObjectSchema *api.ObjectSchemaList
 					Expect(schemaList).To(BeAssignableToTypeOf(sliceOfObjectSchema))
 				})
 
@@ -81,7 +81,7 @@ var _ = Describe("Client", func() {
 
 		Describe("Create one ObjectSchema", func() {
 			endpoint := "/rest/insight/1.0/objectschema/create"
-			schemaCreate := insight.ObjectSchemaCreateUpdateRequest{
+			schemaCreate := api.ObjectSchemaCreateUpdateRequest{
 				Name:        "Computers",
 				Key:         "COMP",
 				Description: "The IT department schema",
@@ -103,7 +103,7 @@ var _ = Describe("Client", func() {
 				It("completes successfully", func() {
 					httpmock.RegisterResponder("POST", endpoint, InsightApiResponder(201, fixture))
 
-					schemaCreate := insight.ObjectSchemaCreateUpdateRequest{
+					schemaCreate := api.ObjectSchemaCreateUpdateRequest{
 						Name:        "Computers",
 						Key:         "COMP",
 						Description: "The IT department schema",
@@ -133,7 +133,7 @@ var _ = Describe("Client", func() {
 					_, err := testClient.CreateSchema(&schemaCreate)
 
 					Expect(err).To(Not(BeNil()))
-					clientError := insight.ClientError{}
+					clientError := api.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
 					Expect(err.Error()).To(Equal("400 " + fixture + "\n"))
 				})
@@ -183,7 +183,7 @@ var _ = Describe("Client", func() {
 					_, err := testClient.GetObjectSchemaById("5")
 
 					Expect(err).To(Not(BeNil()))
-					clientError := insight.ClientError{}
+					clientError := api.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
 					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
 				})
@@ -244,7 +244,7 @@ var _ = Describe("Client", func() {
 					err := testClient.DeleteSchemaByKey("ITX")
 
 					Expect(err).To(Not(BeNil()))
-					clientError := insight.ObjectSchemaNotFoundError{}
+					clientError := api.ObjectSchemaNotFoundError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
 					Expect(err.Error()).To(Equal("Did not find schema 'ITX'\n\nAre you looking for one of these schemas? [HARD IT]\n"))
 				})
@@ -278,7 +278,7 @@ var _ = Describe("Client", func() {
 					err := testClient.DeleteSchema("5")
 
 					Expect(err).To(Not(BeNil()))
-					clientError := insight.ClientError{}
+					clientError := api.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
 					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
 				})
@@ -287,7 +287,7 @@ var _ = Describe("Client", func() {
 
 		Describe("Update one ObjectSchema", func() {
 			endpoint := "/rest/insight/1.0/objectschema/5"
-			schemaUpdate := insight.ObjectSchemaCreateUpdateRequest{
+			schemaUpdate := api.ObjectSchemaCreateUpdateRequest{
 				Name:        "Computers",
 				Key:         "IT",
 				Description: "The IT department schema",
@@ -333,7 +333,7 @@ var _ = Describe("Client", func() {
 					_, err := testClient.UpdateSchema("5", &schemaUpdate)
 
 					Expect(err).To(Not(BeNil()))
-					clientError := insight.ClientError{}
+					clientError := api.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
 					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
 				})

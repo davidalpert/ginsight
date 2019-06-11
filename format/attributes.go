@@ -8,11 +8,11 @@ import (
 
 	"github.com/jedib0t/go-pretty/table"
 
-	insight "github.com/davidalpert/ginsight/insight"
+	api "github.com/davidalpert/ginsight/api"
 	sortStrategies "github.com/davidalpert/ginsight/util/sort"
 )
 
-func WriteObjectTypeAttribute(schemaTagType string, schemaTag string, objectType *insight.ObjectType, attribute *insight.ObjectTypeAttribute) {
+func WriteObjectTypeAttribute(schemaTagType string, schemaTag string, objectType *api.ObjectType, attribute *api.ObjectTypeAttribute) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	WriteObjectTypeAttributeHeader(t, schemaTagType)
@@ -21,7 +21,7 @@ func WriteObjectTypeAttribute(schemaTagType string, schemaTag string, objectType
 	fmt.Println()
 }
 
-func WriteObjectTypeAttributes(schemaTagType string, schemaTag string, objectType *insight.ObjectType, attributes *[]insight.ObjectTypeAttribute) {
+func WriteObjectTypeAttributes(schemaTagType string, schemaTag string, objectType *api.ObjectType, attributes *[]api.ObjectTypeAttribute) {
 	sort.Sort(sortStrategies.ByObjectTypeAttributeID(*attributes))
 
 	t := table.NewWriter()
@@ -39,8 +39,8 @@ func WriteObjectTypeAttributeHeader(t table.Writer, schemaTagType string) {
 	t.AppendHeader(table.Row{schemaTagType, "ObjectType", "Name", "Attr ID", "Description", "Type", "DefaultType", "System", "Editable"})
 }
 
-func WriteObjectTypeAttributeRow(t table.Writer, schemaTag string, objectType *insight.ObjectType, attribute *insight.ObjectTypeAttribute) {
-	attributeTypeName := insight.AttributeDefaultTypeIDToName(attribute.TypeID)
+func WriteObjectTypeAttributeRow(t table.Writer, schemaTag string, objectType *api.ObjectType, attribute *api.ObjectTypeAttribute) {
+	attributeTypeName := api.AttributeDefaultTypeIDToName(attribute.TypeID)
 	var objectTypeIdentifier string
 
 	if objectType == nil {

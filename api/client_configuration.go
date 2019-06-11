@@ -1,4 +1,4 @@
-package insight
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// ClientConfiguration provides properties to configure an insight.Client
+// ClientConfiguration provides properties to configure an api.Client
 type ClientConfiguration struct {
 	BaseURL  string
 	Username string

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	insight "github.com/davidalpert/ginsight/insight"
+	api "github.com/davidalpert/ginsight/api"
 	//insightFormat "github.com/davidalpert/insight/format"
 )
 
@@ -60,16 +60,16 @@ func deleteObjectType(cmd *cobra.Command, args []string) error {
 }
 
 func deleteObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string) error {
-	if insight.DefaultClient().Debug {
+	if api.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectTypes by Name '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
-	objectTypes, err := insight.DefaultClient().GetObjectTypesByNameFromSchemaKey(schemaKey, typeIdentifier)
+	objectTypes, err := api.DefaultClient().GetObjectTypesByNameFromSchemaKey(schemaKey, typeIdentifier)
 	if err != nil {
 		return err
 	}
 
 	if len(*objectTypes) <= 0 {
-		return insight.ObjectTypeNotFoundError{
+		return api.ObjectTypeNotFoundError{
 			SearchTerm:       typeIdentifier,
 			SchemaIdentifier: schemaKey,
 			Suggestions: &[]string{
@@ -82,10 +82,10 @@ func deleteObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string) 
 }
 
 func deleteObjectTypeByIDInSchemaKey(schemaKey string, typeIdentifier string) error {
-	if insight.DefaultClient().Debug {
+	if api.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectType by ID '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
-	objectType, err := insight.DefaultClient().GetObjectTypeByID(typeIdentifier)
+	objectType, err := api.DefaultClient().GetObjectTypeByID(typeIdentifier)
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func deleteObjectTypeByIDInSchemaKey(schemaKey string, typeIdentifier string) er
 	return deleteObjectTypeWithConfirmation(schemaKey, objectType)
 }
 
-func deleteObjectTypeWithConfirmation(schemaIdentifier string, objectType *insight.ObjectType) error {
+func deleteObjectTypeWithConfirmation(schemaIdentifier string, objectType *api.ObjectType) error {
 	fmt.Printf("About to delete ObjectType '%s' from schema '%s' ...\n", objectType.Name, schemaIdentifier)
 	fmt.Println("TODO: implement delete")
 	return nil

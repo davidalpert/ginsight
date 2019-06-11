@@ -16,7 +16,7 @@ $ ./build.sh
 
 ## Configuration
 
-Create the configuration file at `~/.ginsight.yaml` with your Jira details. See `.ginsight.example.yaml`.
+Create the configuration file at `~/.gapi.yaml` with your Jira details. See `.gapi.example.yaml`.
 
 ```yaml
 jira:
@@ -33,7 +33,7 @@ Test the configuration with `ginsight config --validate`
 ```
 $ ginsight config --validate
 Looking for config file: 
-Using config file: /Users/jneufeld/.ginsight.yaml
+Using config file: /Users/jneufeld/.gapi.yaml
 Validating your Insight client configuration...
 
 Successfully authenticated to https://jira.example.com as 'jneufeld' (Jordan Neufeld)

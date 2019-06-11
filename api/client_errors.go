@@ -1,4 +1,4 @@
-package insight
+package api
 
 import (
 	"fmt"

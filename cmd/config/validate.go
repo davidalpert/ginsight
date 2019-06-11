@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	insight "github.com/davidalpert/ginsight/insight"
+	api "github.com/davidalpert/ginsight/api"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +20,7 @@ var CmdValidate = &cobra.Command{
 func validateConfiguration(cmd *cobra.Command, args []string) error {
 	fmt.Println("Validating your Insight client configuration...\n")
 
-	client := insight.DefaultClient()
+	client := api.DefaultClient()
 	me, err := client.GetMe()
 
 	if err != nil {

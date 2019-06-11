@@ -1,4 +1,4 @@
-package insight_test
+package api_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/jarcoal/httpmock"
 
-	insight "github.com/davidalpert/ginsight/insight"
+	api "github.com/davidalpert/ginsight/api"
 )
 
 var _ = Describe("Client", func() {
@@ -315,7 +315,7 @@ var _ = Describe("Client", func() {
 
 					Expect(err).To(BeNil())
 
-					var sliceOfAttributes *[]insight.ObjectTypeAttribute
+					var sliceOfAttributes *[]api.ObjectTypeAttribute
 					Expect(attributeList).To(BeAssignableToTypeOf(sliceOfAttributes))
 				})
 

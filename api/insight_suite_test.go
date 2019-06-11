@@ -1,4 +1,4 @@
-package insight_test
+package api_test
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 	"github.com/jarcoal/httpmock"
 	"gopkg.in/resty.v1"
 
-	insight "github.com/davidalpert/ginsight/insight"
+	api "github.com/davidalpert/ginsight/api"
 )
 
 func TestInsight(t *testing.T) {
@@ -23,18 +23,18 @@ func MockURLFor(endpoint string) string {
 	return MockBaseURL + endpoint
 }
 
-var testClient *insight.Client
+var testClient *api.Client
 
 var _ = BeforeSuite(func() {
 	// build the api client
-	clientConfiguration := insight.ClientConfiguration{
+	clientConfiguration := api.ClientConfiguration{
 		BaseURL:  MockBaseURL,
 		Username: "mal",
 		Password: "serenity",
 		Debug:    false, // toggle true to see Resty and other logs
 	}
 
-	if client, err := insight.BuildClient(&clientConfiguration); err == nil {
+	if client, err := api.BuildClient(&clientConfiguration); err == nil {
 		testClient = client
 	}
 

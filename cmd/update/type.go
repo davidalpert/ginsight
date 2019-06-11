@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	insightFormat "github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 var objectTypeName string
@@ -69,7 +69,7 @@ func init() {
 func updateType(cmd *cobra.Command, args []string) error {
 	typeIdentifier := args[0] // guaranteed by 'Args: cobra.ExactArgs(1)'
 
-	typeUpdate := insight.ObjectTypeUpdateRequest{
+	typeUpdate := api.ObjectTypeUpdateRequest{
 		Name:        typeIdentifier,
 		Description: objectTypeDescription,
 		IconID:      objectTypeIconID,
@@ -86,18 +86,18 @@ func updateType(cmd *cobra.Command, args []string) error {
 	return updateObjectTypeByIdInSchemaKey(objectSchemaKey, typeIdentifier, &typeUpdate)
 }
 
-func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, update *insight.ObjectTypeUpdateRequest) error {
-	if insight.DefaultClient().Debug {
+func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, update *api.ObjectTypeUpdateRequest) error {
+	if api.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectTypes by Name '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
 
-	foundTypes, err := insight.DefaultClient().GetObjectTypesByNameFromSchemaKey(schemaKey, typeIdentifier)
+	foundTypes, err := api.DefaultClient().GetObjectTypesByNameFromSchemaKey(schemaKey, typeIdentifier)
 	if err != nil {
 		return err
 	}
 
 	if len(*foundTypes) < 1 {
-		return insight.ObjectTypeNotFoundError{
+		return api.ObjectTypeNotFoundError{
 			SearchTerm:       typeIdentifier,
 			SchemaIdentifier: schemaKey,
 			Suggestions: &[]string{
@@ -107,7 +107,7 @@ func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, 
 	}
 
 	if len(*foundTypes) > 1 {
-		return &insight.MultipleObjectTypesFoundError{
+		return &api.MultipleObjectTypesFoundError{
 			SchemaID:       schemaKey,
 			ObjectTypeName: typeIdentifier,
 			FoundTypes:     foundTypes,
@@ -119,12 +119,12 @@ func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, 
 	return applyUpdates(schemaKey, &objectType, update)
 }
 
-func updateObjectTypeByIdInSchemaKey(schemaKey string, typeIdentifier string, update *insight.ObjectTypeUpdateRequest) error {
-	if insight.DefaultClient().Debug {
+func updateObjectTypeByIdInSchemaKey(schemaKey string, typeIdentifier string, update *api.ObjectTypeUpdateRequest) error {
+	if api.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectType by Id '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
 
-	objectType, err := insight.DefaultClient().GetObjectTypeByID(typeIdentifier)
+	objectType, err := api.DefaultClient().GetObjectTypeByID(typeIdentifier)
 	if err != nil {
 		return err
 	}
@@ -137,8 +137,8 @@ func updateObjectTypeByIdInSchemaKey(schemaKey string, typeIdentifier string, up
 	return applyUpdates(schemaKey, objectType, update)
 }
 
-func applyUpdates(schemaKey string, objectType *insight.ObjectType, update *insight.ObjectTypeUpdateRequest) error {
-	updatedObjectType, err := insight.DefaultClient().UpdateObjectType(strconv.Itoa(objectType.ID), update)
+func applyUpdates(schemaKey string, objectType *api.ObjectType, update *api.ObjectTypeUpdateRequest) error {
+	updatedObjectType, err := api.DefaultClient().UpdateObjectType(strconv.Itoa(objectType.ID), update)
 	if err != nil {
 		return err
 	}

@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	format "github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 // SchemasCmd represents the get command
@@ -47,13 +47,13 @@ func getAttributes(cmd *cobra.Command, args []string) error {
 
 func getAttributesForSchema(schemaKey string) error {
 	fmt.Printf("Looking up ObjectSchema ID for '%s'\n", objectSchemaKey)
-	schema, schemaErr := insight.DefaultClient().GetObjectSchemaByKey(schemaKey)
+	schema, schemaErr := api.DefaultClient().GetObjectSchemaByKey(schemaKey)
 	if schemaErr != nil {
 		return schemaErr
 	}
 
 	fmt.Printf("Looking up all attributes in ObjectSchema '%s'\n", objectSchemaKey)
-	attributes, err := insight.DefaultClient().GetObjectTypeAttributesForSchemaID(strconv.Itoa(schema.ID))
+	attributes, err := api.DefaultClient().GetObjectTypeAttributesForSchemaID(strconv.Itoa(schema.ID))
 	if err != nil {
 		return err
 	}
@@ -64,23 +64,23 @@ func getAttributesForSchema(schemaKey string) error {
 }
 
 func getAttributesForObjectType(schemaKey string, objectTypeIdentifier string) error {
-	// TODO: refactor to insight.DefaultClient().GetObjectTypeByNameFromSchemaKey(..) which throws error if more than one match is found
-	var objectType *insight.ObjectType
+	// TODO: refactor to api.DefaultClient().GetObjectTypeByNameFromSchemaKey(..) which throws error if more than one match is found
+	var objectType *api.ObjectType
 	if _, atoiErr := strconv.Atoi(objectTypeIdentifier); atoiErr == nil {
 		fmt.Printf("Looking up ObjectType ID '%s' in schema '%s'\n", objectTypeIdentifier, objectSchemaKey)
-		foundType, objectTypeErr := insight.DefaultClient().GetObjectTypeByID(objectTypeIdentifier)
+		foundType, objectTypeErr := api.DefaultClient().GetObjectTypeByID(objectTypeIdentifier)
 		if objectTypeErr != nil {
 			return objectTypeErr
 		}
 		objectType = foundType
 	} else {
 		fmt.Printf("Looking up ObjectType ID for '%s' in schema '%s'\n", objectTypeIdentifier, objectSchemaKey)
-		foundTypes, objectTypesErr := insight.DefaultClient().GetObjectTypesByNameFromSchemaKey(objectSchemaKey, objectTypeIdentifier)
+		foundTypes, objectTypesErr := api.DefaultClient().GetObjectTypesByNameFromSchemaKey(objectSchemaKey, objectTypeIdentifier)
 		if objectTypesErr != nil {
 			return objectTypesErr
 		}
 		if len(*foundTypes) > 1 {
-			return &insight.MultipleObjectTypesFoundError{
+			return &api.MultipleObjectTypesFoundError{
 				SchemaID:       objectSchemaKey,
 				ObjectTypeName: objectTypeIdentifier,
 				FoundTypes:     foundTypes,
@@ -91,7 +91,7 @@ func getAttributesForObjectType(schemaKey string, objectTypeIdentifier string) e
 	// END EXTRACT METHODj
 
 	fmt.Printf("Looking up attributes for ObjectType '%s' (%d) in ObjectSchema '%s' ...\n", objectType.Name, objectType.ID, objectSchemaKey)
-	attributes, err := insight.DefaultClient().GetObjectTypeAttributesForObjectTypeID(strconv.Itoa(objectType.ID))
+	attributes, err := api.DefaultClient().GetObjectTypeAttributesForObjectTypeID(strconv.Itoa(objectType.ID))
 	if err != nil {
 		return err
 	}

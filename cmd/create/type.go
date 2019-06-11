@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	api "github.com/davidalpert/ginsight/api"
 	insightFormat "github.com/davidalpert/ginsight/format"
-	insight "github.com/davidalpert/ginsight/insight"
 )
 
 var objectTypeName string
@@ -72,7 +72,7 @@ func createType(cmd *cobra.Command, args []string) error {
 	objectTypeName = args[0]
 
 	fmt.Printf("Looking up ObjectSchema by key: %s ... ", objectSchemaKey)
-	client := insight.DefaultClient()
+	client := api.DefaultClient()
 
 	schema, err := client.GetObjectSchemaByKey(objectSchemaKey)
 	if err != nil {
@@ -90,7 +90,7 @@ func createType(cmd *cobra.Command, args []string) error {
 		}
 
 		if len(*parentObjectTypes) != 1 {
-			return &insight.MultipleObjectTypesFoundError{
+			return &api.MultipleObjectTypesFoundError{
 				SchemaID:       schema.Key,
 				ObjectTypeName: objectTypeParentObjectTypeName,
 				FoundTypes:     parentObjectTypes,
@@ -101,7 +101,7 @@ func createType(cmd *cobra.Command, args []string) error {
 		fmt.Printf("found the id: %d\n", objectTypeParentObjectTypeID)
 	}
 
-	typeCreate := insight.ObjectTypeCreateRequest{
+	typeCreate := api.ObjectTypeCreateRequest{
 		ObjectSchemaID: schema.ID,
 		Name:           objectTypeName,
 		Description:    objectTypeDescription,
