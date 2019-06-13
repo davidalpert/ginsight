@@ -84,7 +84,7 @@ func (c *Client) UpdateSchema(objectSchemaId string, body *ObjectSchemaCreateUpd
 		return nil, err
 	}
 
-	if err := validateResponseCodeExact(response, 200); err != nil {
+	if err := validateResponseCodeExact(response, 201); err != nil {
 		return nil, err
 	}
 
