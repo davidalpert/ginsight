@@ -29,6 +29,7 @@ var objectTypeDescription string
 var objectTypeParentObjectTypeID int
 var objectTypeParentObjectTypeName string
 var objectTypeIconID int
+var objectTypeIconName string
 
 var CmdCreateType = &cobra.Command{
 	Use:   "type",
@@ -39,29 +40,27 @@ Creates a new ObjectType in a JIRA Insight ObjectSchema
 
 	Args: cobra.ExactArgs(1),
 	Example: `
-  # create a new ObjectType in the IT schema
-  insight create type --key IT --name Vendor -l "A vendor provides products or services"
+  # create a new ObjectType in the IT schema with the default icon
+  insight create type --key IT --name Vendor
 
-  # create a new ObjectType in the IT schema with debug logs enabled
-  insight create type --key IT --name Vendor -l "A vendor provides products or services" --debug
+  # create a new ObjectType in the IT schema with a description
+  insight create type --key IT --name Vendor --description "A vendor provides products or services"
 
-  # create a new ObjectType in the IT schema with debug logs enabled
-  insight create type --key IT --name Vendor -l "A vendor provides products or services" --debug
+  # create a new ObjectType in the IT schema with an icon by ID
+  insight create type --key IT --name Vendor --icon-id 42
 
-  # create a new ObjectType in the IT schema with a parent ObjectType by parent type Id
-  insight create type --key IT --name Vendor -l "A vendor provides products or services" --debug
-
-  # create a new ObjectType in the IT schema with debug logs enabled
-  insight create type --key IT --name Vendor -l "A vendor provides products or services" --debug
+  # create a new ObjectType in the IT schema with an icon by name
+  insight create type --key IT --name Vendor --icon-name cloud
 `,
 	RunE: createType,
 }
 
 func init() {
-	CmdCreateType.Flags().StringVarP(&objectTypeDescription, "description", "l", "", "description of the object type to create")
+	CmdCreateType.Flags().StringVar(&objectTypeDescription, "description", "", "description of the object type to create")
 	CmdCreateType.Flags().StringVarP(&objectTypeParentObjectTypeName, "parent-type-name", "p", "", "name of the parent object type")
 	CmdCreateType.Flags().IntVarP(&objectTypeParentObjectTypeID, "parent-type-id", "P", -1, "id of the parent object type")
-	CmdCreateType.Flags().IntVarP(&objectTypeIconID, "icon-id", "i", 1, "id of the icon") // icon is required, 1-indexed, so 1 is the default iconId
+	CmdCreateType.Flags().IntVarP(&objectTypeIconID, "icon-id", "i", 1, "id of the icon")     // icon is required, 1-indexed, so 1 is the default iconId
+	CmdCreateType.Flags().StringVar(&objectTypeIconName, "icon-name", "", "name of the icon") // icon will be looked up against the global set
 }
 
 func createType(cmd *cobra.Command, args []string) error {
@@ -105,14 +104,21 @@ func createType(cmd *cobra.Command, args []string) error {
 		ObjectSchemaID: schema.ID,
 		Name:           objectTypeName,
 		Description:    objectTypeDescription,
-		IconID:         objectTypeIconID,
+		IconID:         &objectTypeIconID,
+		IconName:       objectTypeIconName,
+	}
+
+	if cmd.Flags().Changed("icon-name") {
+		// icon-name takes precedence over icon-id which has a default
+		fmt.Printf("icon-name has changed, using %s over %d", typeCreate.IconName, typeCreate.IconID)
+		typeCreate.IconID = nil
 	}
 
 	if objectTypeParentObjectTypeID >= 0 {
 		typeCreate.ParentObjectTypeID = objectTypeParentObjectTypeID
 	}
 
-	fmt.Printf("Creating new ObjectType: %s\n", typeCreate)
+	fmt.Printf("Creating new ObjectType: %v\n", typeCreate)
 
 	objectType, err := client.CreateObjectType(&typeCreate)
 	if err != nil {

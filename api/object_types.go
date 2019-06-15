@@ -30,17 +30,19 @@ type ObjectType struct {
 }
 
 type ObjectTypeCreateRequest struct {
-	Name               string `json:"name"`                         // The name
-	Description        string `json:"description"`                  // The description
-	IconID             int    `json:"iconId"`                       // The icon id
+	Name               string `json:"name"`        // The name
+	Description        string `json:"description"` // The description
+	IconID             *int   `json:"iconId"`      // The icon id
+	IconName           string `json:"-"`
 	ParentObjectTypeID int    `json:"parentObjectTypeId,omitempty"` // The parent object type id
 	ObjectSchemaID     int    `json:"objectSchemaId"`               // The Object Schema id
 }
 
 type ObjectTypeUpdateRequest struct {
-	Name        string `json:"name"`        // The name
-	Description string `json:"description"` // The description
-	IconID      int    `json:"iconId"`      // The icon id
+	Name        string `json:"name,omitempty"`        // The name
+	Description string `json:"description,omitempty"` // The description
+	IconID      *int   `json:"iconId,omitempty"`      // The icon id
+	IconName    string `json:"-"`
 }
 
 // Get all ObjectTypes
@@ -191,6 +193,19 @@ func validateSingleObjectTypeFound(types *[]ObjectType) (*ObjectType, error) {
 }
 
 func (c *Client) CreateObjectType(body *ObjectTypeCreateRequest) (*ObjectType, error) {
+	if body.IconID == nil {
+		if body.IconName == "" {
+			return nil, fmt.Errorf("Must provide either an IconID or an IconName")
+		}
+
+		icon, err := c.GetGlobalIconByName(body.IconName)
+		if err != nil {
+			return nil, err
+		}
+
+		body.IconID = &icon.ID
+	}
+
 	response, err := c.R().SetBody(body).SetResult(&ObjectType{}).Post(c.BaseURL + "/rest/insight/1.0/objecttype/create")
 	if err != nil {
 		return nil, err
@@ -204,6 +219,27 @@ func (c *Client) CreateObjectType(body *ObjectTypeCreateRequest) (*ObjectType, e
 }
 
 func (c *Client) UpdateObjectType(objectTypeID string, body *ObjectTypeUpdateRequest) (*ObjectType, error) {
+	if body.IconID == nil {
+		if body.IconName == "" {
+			return nil, fmt.Errorf("Must provide either an IconID or an IconName")
+		}
+
+		if c.Debug {
+			fmt.Printf("Looking up icon for: %s", body.IconName)
+		}
+
+		icon, err := c.GetGlobalIconByName(body.IconName)
+		if err != nil {
+			return nil, err
+		}
+
+		if c.Debug {
+			fmt.Printf("Found an icon for %s: %v", body.IconName, icon)
+		}
+
+		body.IconID = &icon.ID
+	}
+
 	response, err := c.R().SetBody(body).SetResult(&ObjectType{}).Put(c.BaseURL + "/rest/insight/1.0/objecttype/" + objectTypeID)
 	if err != nil {
 		return nil, err

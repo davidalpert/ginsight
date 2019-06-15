@@ -29,6 +29,7 @@ var objectTypeDescription string
 var objectTypeParentObjectTypeID int
 var objectTypeParentObjectTypeName string
 var objectTypeIconID int
+var objectTypeIconName string
 
 var CmdUpdateType = &cobra.Command{
 	Use:   "type",
@@ -39,44 +40,49 @@ Creates a new ObjectType in a JIRA Insight ObjectSchema
 
 	Args: cobra.ExactArgs(1),
 	Example: `
-  # update a new ObjectType in the IT schema
+  # update an ObjectType's name in the IT schema
+  insight update type Vendor --schema IT --name ServiceProvider
+
+  # update an ObjectType's description in the IT schema
   insight update type Vendor --schema IT --description "A vendor provides products or services"
 
-  # update a new ObjectType in the IT schema with debug logs enabled
-  insight update type Vendor --schema IT --description "A vendor provides products or services" --debug
+  # update an ObjectType's icon by ID in the IT schema
+  insight update type Vendor --schema IT --icon-id 42
 
-  # create a new ObjectType in the IT schema with debug logs enabled
-  insight update type Vendor --schema IT --description "A vendor provides products or services" --debug
-
-  # update a new ObjectType in the IT schema with a parent ObjectType by parent type Id
-  insight update type Vendor --schema IT --description "A vendor provides products or services" --debug
-
-  # update a new ObjectType in the IT schema with debug logs enabled
-  insight update type Vendor --schema IT --description "A vendor provides products or services" --debug
+  # update an ObjectType's icon by name in the IT schema
+  insight update type Vendor --schema IT --icon-name building
 `,
 	RunE: updateType,
 }
 
 func init() {
-	CmdUpdateType.Flags().StringVar(&objectTypeName, "new-name", "", "allows updating the name")
+	CmdUpdateType.Flags().StringVar(&objectTypeName, "name", "", "allows updating the name")
 	CmdUpdateType.Flags().StringVarP(&objectTypeDescription, "description", "l", "", "description of the object type to create")
 	CmdUpdateType.Flags().StringVarP(&objectTypeParentObjectTypeName, "parent-type-name", "p", "", "name of the parent object type")
 	CmdUpdateType.Flags().IntVarP(&objectTypeParentObjectTypeID, "parent-type-id", "P", -1, "id of the parent object type")
-	CmdUpdateType.Flags().IntVarP(&objectTypeIconID, "icon-id", "i", 1, "id of the icon") // icon is required, 1-indexed, so 1 is the default iconId
-	//CmdUpdateType.Flags().MarkHidden("new-name")
+	CmdUpdateType.Flags().IntVarP(&objectTypeIconID, "icon-id", "i", 1, "id of the icon")     // icon is required, 1-indexed, so 1 is the default iconId
+	CmdUpdateType.Flags().StringVar(&objectTypeIconName, "icon-name", "", "name of the icon") // icon will be looked up against the global set
 }
 
 func updateType(cmd *cobra.Command, args []string) error {
 	typeIdentifier := args[0] // guaranteed by 'Args: cobra.ExactArgs(1)'
 
-	typeUpdate := api.ObjectTypeUpdateRequest{
-		Name:        typeIdentifier,
-		Description: objectTypeDescription,
-		IconID:      objectTypeIconID,
+	typeUpdate := api.ObjectTypeUpdateRequest{}
+
+	if cmd.Flags().Changed("name") {
+		typeUpdate.Name = objectTypeName // use the new name
+	}
+	if cmd.Flags().Changed("description") {
+		typeUpdate.Description = objectTypeDescription
 	}
 
-	if cmd.Flags().Changed("new-name") {
-		typeUpdate.Name = objectTypeName // use the new name
+	if cmd.Flags().Changed("icon-id") {
+		typeUpdate.IconID = &objectTypeIconID
+		typeUpdate.IconName = ""
+	} else if cmd.Flags().Changed("icon-name") {
+		// icon-name takes precedence over icon-id which has a default
+		typeUpdate.IconID = nil
+		typeUpdate.IconName = objectTypeIconName
 	}
 
 	if _, err := strconv.Atoi(typeIdentifier); err != nil {

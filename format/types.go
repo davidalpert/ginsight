@@ -39,11 +39,11 @@ func WriteObjectTypes(schemaTagType string, schemaTag string, objectTypes *[]api
 }
 
 func WriteObjectTypeHeader(t table.Writer, schemaTagType string) {
-	t.AppendHeader(table.Row{schemaTagType, "Id", "Name", "Description", "ParentObjectTypeID", "Inherited", "Abstract"})
+	t.AppendHeader(table.Row{schemaTagType, "Id", "Name", "Icon", "Description", "ParentObjectTypeID", "Inherited", "Abstract"})
 }
 
 func WriteObjectTypeRow(t table.Writer, schemaTag string, objectType *api.ObjectType) {
-	t.AppendRow([]interface{}{schemaTag, objectType.ID, objectType.Name, objectType.Description, objectType.ParentObjectTypeID, objectType.Inherited, objectType.AbstractObjectType})
+	t.AppendRow([]interface{}{schemaTag, objectType.ID, objectType.Name, objectType.Icon.Name, objectType.Description, objectType.ParentObjectTypeID, objectType.Inherited, objectType.AbstractObjectType})
 }
 
 func WriteObjectSchemasAsTable(schemaList *api.ObjectSchemaList) {
