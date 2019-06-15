@@ -16,6 +16,7 @@ package icon
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/spf13/cobra"
 
@@ -38,7 +39,19 @@ Retreives a list of Icons from the Insight API.
   
   # List all icons in a schema
   ginsight icon list --schema IT
+
+  # Filter list with a text match 'ing'
+  ginsight icon list --global --filter ing
+
+  " Filter list with a case insensitive regex 'build'
+  ginsight icon list --global --filter '(?i)build'
   `,
+}
+
+var iconNameFilter string
+
+func init() {
+	CmdIconList.Flags().StringVarP(&iconNameFilter, "filter", "f", "", "filter search results")
 }
 
 func iconsListE(cmd *cobra.Command, args []string) (err error) {
@@ -59,6 +72,17 @@ func iconsListE(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	format.WriteObjectIcons("Key", schemaTag, icons)
+	if iconNameFilter == "" {
+		format.WriteObjectIcons("Key", schemaTag, icons)
+	} else {
+		filteredIcons := []api.ObjectIcon{}
+		for _, icon := range *icons {
+			if matched, _ := regexp.MatchString(iconNameFilter, icon.Name); matched {
+				filteredIcons = append(filteredIcons, icon)
+			}
+		}
+		format.WriteObjectIcons("Key", schemaTag, &filteredIcons)
+	}
+
 	return nil
 }
