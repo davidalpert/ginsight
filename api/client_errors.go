@@ -69,3 +69,20 @@ You may need to try again using the Id of the ObjectType you want.
 
 `, len(*e.FoundTypes), e.SchemaID, e.ObjectTypeName, suggestions)
 }
+
+// -----------------------------------------------
+
+// ObjectIconNotFoundError represents an ObjectIcon not found
+type ObjectIconNotFoundError struct {
+	SearchTerm       string
+	SchemaIdentifier string
+	Suggestions      *[]string
+}
+
+func (e ObjectIconNotFoundError) Error() string {
+	if e.SchemaIdentifier == "" {
+		return fmt.Sprintf("Did not find icon '%s' in the global icon set.\n\nAre you looking for one of these types? %s\n", e.SearchTerm, e.Suggestions)
+	} else {
+		return fmt.Sprintf("Did not find icon '%s' in ObjectSchema '%s'\n\nAre you looking for one of these types? %s\n", e.SearchTerm, e.SchemaIdentifier, e.Suggestions)
+	}
+}

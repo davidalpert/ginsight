@@ -12,7 +12,16 @@ import (
 	sortStrategies "github.com/davidalpert/ginsight/util/sort"
 )
 
-func WriteIcons(schemaTagType string, schemaTag string, icons *[]api.ObjectIcon) {
+func WriteObjectIcon(schemaTagType string, schemaTag string, icon *api.ObjectIcon) {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	WriteObjectIconHeader(t, schemaTagType)
+	WriteObjectIconRow(t, schemaTag, icon)
+	t.Render()
+	fmt.Println()
+}
+
+func WriteObjectIcons(schemaTagType string, schemaTag string, icons *[]api.ObjectIcon) {
 	fmt.Printf("\nInsight Icons found for \"%s\"\n\n", schemaTag)
 
 	sort.Sort(sortStrategies.ByObjectIconID(*icons))

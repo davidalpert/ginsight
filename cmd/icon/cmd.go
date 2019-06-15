@@ -26,11 +26,6 @@ var Cmd = &cobra.Command{
 Provides subcommands to interact with Icons in a Jira Insight installation.
 
 `,
-	Example: `
-# List all icons 
-insight icon get
-`,
-
 	PersistentPreRunE: iconPersistentPreRunE,
 }
 
@@ -60,6 +55,9 @@ func init() {
 	Cmd.PersistentFlags().Bool("global", false, "use global icon scope")
 	viper.BindPFlag("global", Cmd.PersistentFlags().Lookup("global"))
 
+	Cmd.PersistentFlags().SortFlags = false
+
 	// Subcommands
+	Cmd.AddCommand(CmdIconList)
 	Cmd.AddCommand(CmdIconGet)
 }
