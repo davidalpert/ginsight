@@ -40,11 +40,8 @@ Retreives a list of Icons from the Insight API.
   # List all icons in a schema
   ginsight icon list --schema IT
 
-  # Filter list with a text match 'ing'
-  ginsight icon list --global --filter ing
-
-  " Filter list with a case insensitive regex 'build'
-  ginsight icon list --global --filter '(?i)build'
+  # Filter list with a case insensitive regex 'build'
+  ginsight icon list --global --filter build
   `,
 }
 
@@ -76,8 +73,9 @@ func iconsListE(cmd *cobra.Command, args []string) (err error) {
 		format.WriteObjectIcons("Key", schemaTag, icons)
 	} else {
 		filteredIcons := []api.ObjectIcon{}
+		pattern := "(?i)" + iconNameFilter // make all name filters case insensitive
 		for _, icon := range *icons {
-			if matched, _ := regexp.MatchString(iconNameFilter, icon.Name); matched {
+			if matched, _ := regexp.MatchString(pattern, icon.Name); matched {
 				filteredIcons = append(filteredIcons, icon)
 			}
 		}
