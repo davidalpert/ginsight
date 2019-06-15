@@ -26,6 +26,7 @@ import (
 	create "github.com/davidalpert/ginsight/cmd/create"
 	delete "github.com/davidalpert/ginsight/cmd/delete"
 	get "github.com/davidalpert/ginsight/cmd/get"
+	icon "github.com/davidalpert/ginsight/cmd/icon"
 	update "github.com/davidalpert/ginsight/cmd/update"
 )
 
@@ -86,6 +87,7 @@ func init() {
 	rootCmd.AddCommand(delete.Cmd)
 	rootCmd.AddCommand(get.Cmd)
 	rootCmd.AddCommand(update.Cmd)
+	rootCmd.AddCommand(icon.Cmd)
 }
 
 // initConfig reads in config file and ENV variables if set.

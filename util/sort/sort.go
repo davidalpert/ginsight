@@ -16,6 +16,18 @@ func (s ByObjectTypeName) Len() int           { return len(s) }
 func (s ByObjectTypeName) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s ByObjectTypeName) Less(i, j int) bool { return s[i].Name < s[j].Name }
 
+type ByObjectIconID []api.ObjectIcon
+
+func (s ByObjectIconID) Len() int           { return len(s) }
+func (s ByObjectIconID) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s ByObjectIconID) Less(i, j int) bool { return s[i].ID < s[j].ID }
+
+type ByObjectIconName []api.ObjectIcon
+
+func (s ByObjectIconName) Len() int           { return len(s) }
+func (s ByObjectIconName) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s ByObjectIconName) Less(i, j int) bool { return s[i].Name < s[j].Name }
+
 type ByObjectTypeAttributeName []api.ObjectTypeAttribute
 
 func (s ByObjectTypeAttributeName) Len() int           { return len(s) }
