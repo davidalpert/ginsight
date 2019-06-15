@@ -117,6 +117,16 @@ func (c *Client) GetObjectTypesByNameFromSchemaID(schemaID string, name string) 
 	return c.lookupObjectTypesByName(schemaID, objectTypes, name)
 }
 
+func (c *Client) GetObjectTypeByNameFromSchemaID(schemaID string, name string) (*ObjectType, error) {
+	types, err := c.GetObjectTypesByNameFromSchemaID(schemaID, name)
+	if err != nil {
+		// ctx.WithError(err).Error("get ObjectType by name failed")
+		return nil, err
+	}
+
+	return validateSingleObjectTypeFound(types)
+}
+
 func (c *Client) GetObjectTypesByNameFromSchemaKey(key string, typeName string) (*[]ObjectType, error) {
 	if c.Debug {
 		log.Printf("GetObjectTypesByNameFromSchemaKey: schema '%s' typeName '%s'\n", key, typeName)
@@ -126,6 +136,16 @@ func (c *Client) GetObjectTypesByNameFromSchemaKey(key string, typeName string) 
 		return nil, err
 	}
 	return c.lookupObjectTypesByName(key, objectTypes, typeName)
+}
+
+func (c *Client) GetObjectTypeByNameFromSchemaKey(key string, name string) (*ObjectType, error) {
+	types, err := c.GetObjectTypesByNameFromSchemaKey(key, name)
+	if err != nil {
+		// ctx.WithError(err).Error("get ObjectType by name failed")
+		return nil, err
+	}
+
+	return validateSingleObjectTypeFound(types)
 }
 
 func (c *Client) lookupObjectTypesByName(schemaIdentifier string, objectTypes *[]ObjectType, name string) (*[]ObjectType, error) {
@@ -152,6 +172,22 @@ func (c *Client) lookupObjectTypesByName(schemaIdentifier string, objectTypes *[
 	}
 
 	return &foundTypes, nil
+}
+
+func validateSingleObjectTypeFound(types *[]ObjectType) (*ObjectType, error) {
+	number_found := len(*types)
+	//ctx.WithField("number_found", number_found).Info("objectType already exists")
+	if number_found > 1 {
+		//ctx.Error("cannot determine ObjectType by name")
+		return nil, fmt.Errorf("cannot determine ObjectType by name")
+	} else if number_found == 0 {
+		//ctx.Debug("ObjectType not found")
+		return nil, fmt.Errorf("ObjectType not found")
+	}
+
+	objectType := (*types)[0]
+	//ctx.WithField("object_type_id", objectType.ID).Debug("ObjectType found")
+	return &objectType, nil
 }
 
 func (c *Client) CreateObjectType(body *ObjectTypeCreateRequest) (*ObjectType, error) {
