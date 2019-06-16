@@ -33,7 +33,7 @@ func (t *ObjectType) IDString() string {
 	return strconv.Itoa(t.ID)
 }
 
-type ByObjectTypePosition []*ObjectType
+type ByObjectTypePosition []ObjectType
 
 func (s ByObjectTypePosition) Len() int           { return len(s) }
 func (s ByObjectTypePosition) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
@@ -44,9 +44,8 @@ func (s ByObjectTypePosition) Less(i, j int) bool { return s[i].Position < s[j].
 //                      nesting ObjectTypes in an ObjectSchema
 func (t *ObjectType) ToObjectTypePosition() *ObjectTypePosition {
 	return &ObjectTypePosition{
-    ID:       t.ID,
-    Name: t.Name,
-		ParentID: t.ParentObjectTypeID,
+		ID: t.ID,
+		//ParentID: t.ParentObjectTypeID,
 		Position: t.Position,
 	}
 }

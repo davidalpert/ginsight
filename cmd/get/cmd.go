@@ -56,4 +56,5 @@ func init() {
 	Cmd.AddCommand(CmdGetType)
 	Cmd.AddCommand(CmdGetTypes)
 	Cmd.AddCommand(CmdGetAttributes)
+	Cmd.AddCommand(CmdGetFamily)
 }
