@@ -29,6 +29,10 @@ type ObjectType struct {
 	ParentObjectTypeInherited bool   `json:"parentObjectTypeInherited"`
 }
 
+func (t *ObjectType) IDString() string {
+	return strconv.Itoa(t.ID)
+}
+
 type ObjectTypeCreateRequest struct {
 	Name               string `json:"name"`        // The name
 	Description        string `json:"description"` // The description
@@ -39,9 +43,9 @@ type ObjectTypeCreateRequest struct {
 }
 
 type ObjectTypeUpdateRequest struct {
-	Name        string `json:"name,omitempty"`        // The name
-	Description string `json:"description,omitempty"` // The description
-	IconID      *int   `json:"iconId,omitempty"`      // The icon id
+	Name        string `json:"name"`        // The name
+	Description string `json:"description"` // The description
+	IconID      *int   `json:"iconId"`      // The icon id
 	IconName    string `json:"-"`
 }
 

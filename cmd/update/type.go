@@ -67,32 +67,14 @@ func init() {
 func updateType(cmd *cobra.Command, args []string) error {
 	typeIdentifier := args[0] // guaranteed by 'Args: cobra.ExactArgs(1)'
 
-	typeUpdate := api.ObjectTypeUpdateRequest{}
-
-	if cmd.Flags().Changed("name") {
-		typeUpdate.Name = objectTypeName // use the new name
-	}
-	if cmd.Flags().Changed("description") {
-		typeUpdate.Description = objectTypeDescription
-	}
-
-	if cmd.Flags().Changed("icon-id") {
-		typeUpdate.IconID = &objectTypeIconID
-		typeUpdate.IconName = ""
-	} else if cmd.Flags().Changed("icon-name") {
-		// icon-name takes precedence over icon-id which has a default
-		typeUpdate.IconID = nil
-		typeUpdate.IconName = objectTypeIconName
-	}
-
 	if _, err := strconv.Atoi(typeIdentifier); err != nil {
-		return updateObjectTypeByNameInSchemaKey(objectSchemaKey, typeIdentifier, &typeUpdate)
+		return updateObjectTypeByNameInSchemaKey(cmd, objectSchemaKey, typeIdentifier)
 	}
 
-	return updateObjectTypeByIdInSchemaKey(objectSchemaKey, typeIdentifier, &typeUpdate)
+	return updateObjectTypeByIdInSchemaKey(cmd, objectSchemaKey, typeIdentifier)
 }
 
-func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, update *api.ObjectTypeUpdateRequest) error {
+func updateObjectTypeByNameInSchemaKey(cmd *cobra.Command, schemaKey string, typeIdentifier string) error {
 	if api.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectTypes by Name '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
@@ -122,10 +104,10 @@ func updateObjectTypeByNameInSchemaKey(schemaKey string, typeIdentifier string, 
 
 	objectType := (*foundTypes)[0]
 
-	return applyUpdates(schemaKey, &objectType, update)
+	return applyUpdates(cmd, schemaKey, &objectType)
 }
 
-func updateObjectTypeByIdInSchemaKey(schemaKey string, typeIdentifier string, update *api.ObjectTypeUpdateRequest) error {
+func updateObjectTypeByIdInSchemaKey(cmd *cobra.Command, schemaKey string, typeIdentifier string) error {
 	if api.DefaultClient().Debug {
 		fmt.Printf("Looking up ObjectType by Id '%s' in Schema '%s' ...\n", typeIdentifier, schemaKey)
 	}
@@ -135,16 +117,56 @@ func updateObjectTypeByIdInSchemaKey(schemaKey string, typeIdentifier string, up
 		return err
 	}
 
-	// don't change the name when we looked it up by ID and haven't set the name to something new
-	if update.Name == typeIdentifier {
-		update.Name = objectType.Name
-	}
-
-	return applyUpdates(schemaKey, objectType, update)
+	return applyUpdates(cmd, schemaKey, objectType)
 }
 
-func applyUpdates(schemaKey string, objectType *api.ObjectType, update *api.ObjectTypeUpdateRequest) error {
-	updatedObjectType, err := api.DefaultClient().UpdateObjectType(strconv.Itoa(objectType.ID), update)
+func applyUpdates(cmd *cobra.Command, schemaKey string, objectType *api.ObjectType) error {
+	request := api.ObjectTypeUpdateRequest{}
+
+	if cmd.Flags().Changed("name") {
+		request.Name = objectTypeName // use the new name
+	} else {
+		request.Name = objectType.Name
+	}
+
+	if cmd.Flags().Changed("description") {
+		request.Description = objectTypeDescription
+	} else {
+		request.Description = objectType.Description
+	}
+
+	if cmd.Flags().Changed("icon-id") {
+		// update the id
+		request.IconID = &objectTypeIconID
+		request.IconName = ""
+	} else if cmd.Flags().Changed("icon-name") {
+		// icon-name takes precedence over icon-id which has a default
+		request.IconID = nil
+		request.IconName = objectTypeIconName
+	} else {
+		// don't change a thing; send the existing object_type_id
+		request.IconID = &objectType.Icon.ID
+		request.IconName = ""
+	}
+
+	updatedObjectType, err := api.DefaultClient().UpdateObjectType(strconv.Itoa(objectType.ID), &request)
+	if err != nil {
+		return err
+	}
+
+	if cmd.Flags().Changed("parent-type-id") {
+		updatedObjectType, err = api.DefaultClient().UpdateObjectTypeParent(strconv.Itoa(objectType.ID), &objectTypeParentObjectTypeID)
+	} else if cmd.Flags().Changed("parent-type-name") {
+		if objectTypeParentObjectTypeName == "none" {
+			updatedObjectType, err = api.DefaultClient().UpdateObjectTypeParent(strconv.Itoa(objectType.ID), nil)
+		} else {
+			parentObjectType, err := api.DefaultClient().GetObjectTypeByNameFromSchemaKey(objectSchemaKey, objectTypeParentObjectTypeName)
+			if err != nil {
+				return err
+			}
+			updatedObjectType, err = api.DefaultClient().UpdateObjectTypeParent(strconv.Itoa(objectType.ID), &parentObjectType.ID)
+		}
+	}
 	if err != nil {
 		return err
 	}
