@@ -39,26 +39,6 @@ func (s ByObjectTypePosition) Len() int           { return len(s) }
 func (s ByObjectTypePosition) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s ByObjectTypePosition) Less(i, j int) bool { return s[i].Position < s[j].Position }
 
-// ToObjectTypePosition gets the parent and position summary the
-//                      given ObjectType; useful in sorting and
-//                      nesting ObjectTypes in an ObjectSchema
-func (t *ObjectType) ToObjectTypePosition() *ObjectTypePosition {
-	return &ObjectTypePosition{
-		ID: t.ID,
-		//ParentID: t.ParentObjectTypeID,
-		Position: t.Position,
-	}
-}
-
-// helper function to map a list of ObjectTypes to their positions
-func mapObjectTypesToPositions(types []*ObjectType) []*ObjectTypePosition {
-	positions := make([]*ObjectTypePosition, len(types))
-	for i, t := range types {
-		positions[i] = t.ToObjectTypePosition()
-	}
-	return positions
-}
-
 type ObjectTypeCreateRequest struct {
 	Name               string `json:"name"`        // The name
 	Description        string `json:"description"` // The description

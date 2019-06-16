@@ -3,18 +3,7 @@ package api
 import (
 	"fmt"
 	"sort"
-	"strconv"
 )
-
-type ObjectTypePosition struct {
-	ID       int  `json:"-"`
-	ParentID *int `json:"toParentObjectId"`
-	Position int  `json:"position"`
-}
-
-func (p *ObjectTypePosition) IDString() string {
-	return strconv.Itoa(p.ID)
-}
 
 type ObjectTypeFamily struct {
 	Schema   *ObjectSchema

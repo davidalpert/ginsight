@@ -34,7 +34,7 @@ Retreives a family of ObjectTypes from the Insight API (a parent and it's childr
 
 if 'identifier' is missing return the 'root' family (objects with no parents)
 `,
-  Example: `
+	Example: `
   # get the list of ObjectTypes grouped under the 'Hardware' type family in the IT schema
   ginsight get family hardware --schema IT
 
