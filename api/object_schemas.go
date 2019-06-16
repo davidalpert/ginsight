@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 )
 
@@ -16,6 +17,10 @@ type ObjectSchema struct {
 	Updated         string `json:"updated"`         // The updated date
 	ObjectTypeCount int    `json:"objectTypeCount"` // Number of object types
 	ObjectCount     int    `json:"objectCount"`     // Number of objects
+}
+
+func (s *ObjectSchema) IDString() string {
+	return strconv.Itoa(s.ID)
 }
 
 type ObjectSchemaList struct {

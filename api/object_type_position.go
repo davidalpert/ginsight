@@ -2,7 +2,59 @@ package api
 
 import (
 	"fmt"
+	"sort"
+	"strconv"
 )
+
+type ObjectTypePosition struct {
+	ID       int  `json:"-"`
+	ParentID *int `json:"toParentObjectId"`
+	Position int  `json:"position"`
+}
+
+func (p *ObjectTypePosition) IDString() string {
+	return strconv.Itoa(p.ID)
+}
+
+type ObjectTypeFamily struct {
+	SchemaKey string
+	SchemaID  int
+	ParentID  *int
+	ChildIDs  []int
+}
+
+func (c *Client) GetObjectTypeFamilyForSchemaKey(schemaKey string, parentTypeID *int) (*ObjectTypeFamily, error) {
+	objectSchema, err := c.GetObjectSchemaByKey(schemaKey)
+	if err != nil {
+		return nil, err
+	}
+
+	family := &ObjectTypeFamily{
+		SchemaKey: schemaKey,
+		SchemaID:  objectSchema.ID,
+		ChildIDs:  []int{},
+	}
+
+	objectTypes, err := c.GetObjectTypesForSchemaID(objectSchema.IDString())
+	if err != nil {
+		return nil, err
+	}
+
+	childTypes := []*ObjectType{}
+	for _, t := range *objectTypes {
+		if t.ParentObjectTypeID == parentTypeID {
+			childTypes = append(childTypes, &t)
+		}
+	}
+
+	sort.Sort(ByObjectTypePosition(childTypes))
+
+	for _, t := range childTypes {
+		family.ChildIDs = append(family.ChildIDs, t.ID)
+	}
+
+	return family, nil
+}
 
 func (c *Client) UpdateObjectTypeParent(objectTypeID string, newParentTypeID *int) (*ObjectType, error) {
 	// new parent without a position? let's insert it as the first of it's children
@@ -17,7 +69,7 @@ func (c *Client) UpdateObjectTypePosition(objectTypeID string, newPosition int) 
 		return nil, err
 	}
 
-	return c.UpdateObjectTypeParentAndPosition(objectTypeID, &objectType.ParentObjectTypeID, newPosition)
+	return c.UpdateObjectTypeParentAndPosition(objectTypeID, objectType.ParentObjectTypeID, newPosition)
 }
 
 func (c *Client) UpdateObjectTypeParentAndPosition(objectTypeID string, newParentTypeID *int, newPosition int) (*ObjectType, error) {
