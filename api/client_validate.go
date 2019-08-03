@@ -3,11 +3,11 @@ package api
 // JiraMe models the response of Jira's /rest/api/2/myself endpoint
 type JiraMe struct {
 	Name         string `json:"name"`
-	DisplayName  string `json:"displayName`
-	EmailAddress string `json:"emailAddress`
-	Active       bool   `json:"active`
-	TimeZone     string `json:"timeZone`
-	Locale       string `json:"locale`
+	DisplayName  string `json:"displayName"`
+	EmailAddress string `json:"emailAddress"`
+	Active       bool   `json:"active"`
+	TimeZone     string `json:"timeZone"`
+	Locale       string `json:"locale"`
 }
 
 // GetMe fetches information about the configured Jira credentials.
