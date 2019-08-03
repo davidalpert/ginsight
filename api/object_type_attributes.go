@@ -125,9 +125,19 @@ func (c *Client) GetObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[
 	return response.Result().(*[]ObjectTypeAttribute), nil
 }
 
-func (c *Client) UpdateLabelAttributeForObjectTypeID(objectTypeID string, attributeID int, body *ObjectTypeLabelAttributeUpdateRequest) (*ObjectTypeAttribute, error) {
+func (c *Client) UpdateLabelAttributeForObjectTypeID(objectTypeID string, name string, description string) (*ObjectTypeAttribute, error) {
 	var result ObjectTypeAttribute
-	response, err := c.R().SetBody(body).SetResult(&result).Put(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s/%d", objectTypeID, attributeID))
+	body := &ObjectTypeLabelAttributeUpdateRequest{
+		Name: name,
+		Description: description,
+	}
+
+	labelAttribute, err := c.GetLabelAttributeForObjectTypeID(objectTypeID)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := c.R().SetBody(body).SetResult(&result).Put(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s/%d", objectTypeID, labelAttribute.ID))
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +147,21 @@ func (c *Client) UpdateLabelAttributeForObjectTypeID(objectTypeID string, attrib
 	}
 
 	return response.Result().(*ObjectTypeAttribute), nil
+}
+
+func (c *Client) GetLabelAttributeForObjectTypeID(objectTypeID string) (*ObjectTypeAttribute, error) {
+	attributes, err := c.GetObjectTypeAttributesForObjectTypeID(objectTypeID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range *attributes {
+		if a.Editable && a.Label {
+			return &a, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Could not find the Label attribute for ObjectTypeID [%s]!", objectTypeID)
 }
 
 func (c *Client) GetEditableObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[]ObjectTypeAttribute, error) {
