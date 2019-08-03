@@ -84,6 +84,19 @@ func (c *Client) CreateSchema(body *ObjectSchemaCreateUpdateRequest) (*ObjectSch
 
 // Update an ObjectSchema
 func (c *Client) UpdateSchema(objectSchemaId string, body *ObjectSchemaCreateUpdateRequest) (*ObjectSchema, error) {
+	existingSchema, err := c.GetObjectSchemaById(objectSchemaId)
+	if err != nil {
+		return nil, err
+	}
+
+	if existingSchema.Key != body.Key {
+		return nil, &ObjectSchemaKeyMismatchError{
+			SchemaId: objectSchemaId,
+			ExistingKey: existingSchema.Key,
+			NewKey: body.Key,
+		}
+	}
+
 	response, err := c.R().SetBody(body).SetResult(&ObjectSchema{}).Put(c.BaseURL + "/rest/insight/1.0/objectschema/" + objectSchemaId)
 	if err != nil {
 		return nil, err

@@ -292,6 +292,17 @@ var _ = Describe("Client", func() {
 				Key:         "IT",
 				Description: "The IT department schema",
 			}
+			existingSchemaResponse := `{
+    "id": 5,
+    "name": "Computer",
+    "objectSchemaKey": "IT",
+    "status": "Ok",
+    "description": "The IT department schema",
+    "created": "25/May/19 3:42 AM",
+    "updated": "25/May/19 3:42 AM",
+    "objectCount": 0,
+    "objectTypeCount": 0
+   }`
 
 			Context("Successful", func() {
 				fixture := `{
@@ -307,6 +318,7 @@ var _ = Describe("Client", func() {
         }`
 
 				It("completes successfully", func() {
+					httpmock.RegisterResponder("GET", endpoint, InsightApiResponder(200, existingSchemaResponse))
 					httpmock.RegisterResponder("PUT", endpoint, InsightApiResponder(201, fixture))
 
 					updatedSchema, err := testClient.UpdateSchema("5", &schemaUpdate)
@@ -328,6 +340,7 @@ var _ = Describe("Client", func() {
         }`
 
 				It("returns an error", func() {
+					httpmock.RegisterResponder("GET", endpoint, InsightApiResponder(200, existingSchemaResponse))
 					httpmock.RegisterResponder("PUT", endpoint, InsightApiResponder(404, fixture))
 
 					_, err := testClient.UpdateSchema("5", &schemaUpdate)
@@ -336,6 +349,25 @@ var _ = Describe("Client", func() {
 					clientError := api.ClientError{}
 					Expect(err).To(BeAssignableToTypeOf(&clientError))
 					Expect(err.Error()).To(Equal("404 " + fixture + "\n"))
+				})
+			})
+
+			Context("Changed key raises an error", func() {
+				// the insight api does not let you change the Jira KEY once a schem is created
+				schemaUpdate2 := api.ObjectSchemaCreateUpdateRequest{
+					Name:        "Computers",
+					Key:         "IT2", // <-- assume was already set as 'IT'; see existingSchemaResponse.objectSchemaKey
+					Description: "The IT department schema",
+				}
+
+				It("returns an error", func() {
+					httpmock.RegisterResponder("GET", endpoint, InsightApiResponder(200, existingSchemaResponse))
+
+					_, err := testClient.UpdateSchema("5", &schemaUpdate2)
+
+					Expect(err).To(Not(BeNil()))
+					clientError := api.ObjectSchemaKeyMismatchError{}
+					Expect(err).To(BeAssignableToTypeOf(&clientError))
 				})
 			})
 		})

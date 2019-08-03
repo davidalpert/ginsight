@@ -36,6 +36,20 @@ func (e ObjectSchemaNotFoundError) Error() string {
 
 // -----------------------------------------------
 
+// ObjectSchemaKeyMismatchError represents an invalid attempt to update a schema key
+type ObjectSchemaKeyMismatchError struct {
+	SchemaId string
+	ExistingKey  string
+	NewKey string
+}
+
+// Error provides the error response as a string
+func (e ObjectSchemaKeyMismatchError) Error() string {
+	return fmt.Sprintf("Invalid attempt to update schema key for Schema #%s from '%s' to '%s'\n\nthe insight API does not allow changing a schema key after it has been created.\n", e.SchemaId, e.ExistingKey, e.NewKey)
+}
+
+// -----------------------------------------------
+
 // ObjectTypeNotFoundError represents an ObjectType not found
 type ObjectTypeNotFoundError struct {
 	SearchTerm       string
