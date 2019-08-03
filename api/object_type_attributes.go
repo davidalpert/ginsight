@@ -76,6 +76,11 @@ type ObjectTypeAttribute struct {
 	AdditionalValue         string `json:"additionalValue,omitempty"`
 }
 
+type ObjectTypeLabelAttributeUpdateRequest struct {
+	Name          string `json:"name"`
+	Description   string `json:"description,omitempty"`
+}
+
 type ObjectTypeDefaultAttributeCreateRequest struct {
 	Name          string `json:"name"`
 	Description   string `json:"description,omitempty"`
@@ -118,6 +123,36 @@ func (c *Client) GetObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[
 		return nil, err
 	}
 	return response.Result().(*[]ObjectTypeAttribute), nil
+}
+
+func (c *Client) UpdateLabelAttributeForObjectTypeID(objectTypeID string, attributeID int, body *ObjectTypeLabelAttributeUpdateRequest) (*ObjectTypeAttribute, error) {
+	var result ObjectTypeAttribute
+	response, err := c.R().SetBody(body).SetResult(&result).Put(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s/%d", objectTypeID, attributeID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
+	}
+
+	return response.Result().(*ObjectTypeAttribute), nil
+}
+
+func (c *Client) GetEditableObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[]ObjectTypeAttribute, error) {
+	attributes, err := c.GetObjectTypeAttributesForObjectTypeID(objectTypeID)
+	if err != nil {
+		return nil, err
+	}
+
+	editableAttributes := make([]ObjectTypeAttribute, 0)
+	for _, a := range *attributes {
+		if a.Editable {
+			editableAttributes = append(editableAttributes, a)
+		}
+	}
+
+	return &editableAttributes, nil
 }
 
 func (c *Client) CreateObjectTypeDefaultAttribute(objectTypeID string, body *ObjectTypeDefaultAttributeCreateRequest) (*ObjectTypeAttribute, error) {
