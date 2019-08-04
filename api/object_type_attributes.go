@@ -193,14 +193,33 @@ func (c *Client) GetEditableObjectTypeAttributesForObjectTypeID(objectTypeID str
 	return &editableAttributes, nil
 }
 
+// Default attributes -----------------------------
+
 func (c *Client) CreateObjectTypeDefaultAttribute(objectTypeID string, body *ObjectTypeDefaultAttributeCreateRequest) (*ObjectTypeAttribute, error) {
 	response, err := c.R().SetBody(body).SetResult(&ObjectTypeAttribute{}).
 		Post(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s", objectTypeID))
 	if err != nil {
 		return nil, err
 	}
+	if err = validateResponseCodeExact(response, 201); err != nil {
+		return nil, err
+	}
 	return response.Result().(*ObjectTypeAttribute), nil
 }
+
+func (c *Client) UpdateObjectTypeDefaultAttribute(objectTypeID string, attributeID int, body *ObjectTypeDefaultAttributeCreateRequest) (*ObjectTypeAttribute, error) {
+	response, err := c.R().SetBody(body).SetResult(&ObjectTypeAttribute{}).
+		Put(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s/%d", objectTypeID, attributeID))
+	if err != nil {
+		return nil, err
+	}
+	if err = validateResponseCodeExact(response, 200); err != nil {
+		return nil, err
+	}
+	return response.Result().(*ObjectTypeAttribute), nil
+}
+
+// Object attributes -----------------------------
 
 func (c *Client) CreateObjectTypeObjectAttribute(objectTypeID string, body *ObjectTypeDefaultAttributeCreateRequest) (*ObjectTypeAttribute, error) {
 	response, err := c.R().SetBody(body).SetResult(&ObjectTypeAttribute{}).
