@@ -26,6 +26,15 @@ func AttributeTypeNameToID(name string) int {
 	return -1
 }
 
+func AttributeTypeIdToName(id int) string {
+	for typeName, typeID := range AttributeTypeIDsByName {
+		if typeID == id {
+			return typeName
+		}
+	}
+	return ""
+}
+
 // The DefaultType if type is set to "Default"
 var AttributeDefaultTypeIDsByName = map[string]int{
 	"text":      0,
@@ -74,6 +83,10 @@ type ObjectTypeAttribute struct {
 	Position                int    `json:"position"`
 	Description             string `json:"description,omitempty"`
 	AdditionalValue         string `json:"additionalValue,omitempty"`
+}
+
+func (a *ObjectTypeAttribute) TypeName() string {
+	return AttributeTypeIdToName(a.TypeID)
 }
 
 type ObjectTypeLabelAttributeUpdateRequest struct {
