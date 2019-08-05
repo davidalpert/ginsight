@@ -138,6 +138,36 @@ func (c *Client) GetObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[
 	return response.Result().(*[]ObjectTypeAttribute), nil
 }
 
+func (c *Client) DeleteObjectTypeAttribute(attributeTypeID string) error {
+	response, err := c.R().Delete(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s/", attributeTypeID))
+	if err != nil {
+		return err
+	}
+
+	if err = validateResponseCodeExact(response, 200); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// label attributes are kind of special --------------------------------------
+
+func (c *Client) GetLabelAttributeForObjectTypeID(objectTypeID string) (*ObjectTypeAttribute, error) {
+	attributes, err := c.GetObjectTypeAttributesForObjectTypeID(objectTypeID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range *attributes {
+		if a.Editable && a.Label {
+			return &a, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Could not find the Label attribute for ObjectTypeID [%s]!", objectTypeID)
+}
+
 func (c *Client) UpdateLabelAttributeForObjectTypeID(objectTypeID string, name string, description string) (*ObjectTypeAttribute, error) {
 	var result ObjectTypeAttribute
 	body := &ObjectTypeLabelAttributeUpdateRequest{
@@ -162,20 +192,7 @@ func (c *Client) UpdateLabelAttributeForObjectTypeID(objectTypeID string, name s
 	return response.Result().(*ObjectTypeAttribute), nil
 }
 
-func (c *Client) GetLabelAttributeForObjectTypeID(objectTypeID string) (*ObjectTypeAttribute, error) {
-	attributes, err := c.GetObjectTypeAttributesForObjectTypeID(objectTypeID)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, a := range *attributes {
-		if a.Editable && a.Label {
-			return &a, nil
-		}
-	}
-
-	return nil, fmt.Errorf("Could not find the Label attribute for ObjectTypeID [%s]!", objectTypeID)
-}
+// editable attributes are .... editable ----------------------------------------
 
 func (c *Client) GetEditableObjectTypeAttributesForObjectTypeID(objectTypeID string) (*[]ObjectTypeAttribute, error) {
 	attributes, err := c.GetObjectTypeAttributesForObjectTypeID(objectTypeID)
