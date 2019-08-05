@@ -151,6 +151,28 @@ func (c *Client) DeleteObjectTypeAttribute(attributeTypeID string) error {
 	return nil
 }
 
+// experimental - moving attributes -----------------------------------------
+
+type ObjectTypeAttributeMoveRequest struct {
+	After         string `json:"after"`
+}
+
+func (c *Client) MoveObjectTypeAttribute(objectTypeID string, attributeID int, afterAttributeID int) error {
+	body := &ObjectTypeAttributeMoveRequest{
+		After: fmt.Sprintf("/rest/insight/1.0/objecttypeattribute/%s/%d", objectTypeID, afterAttributeID),
+	}
+	response, err := c.R().SetBody(body).Post(fmt.Sprintf(c.BaseURL+"/rest/insight/1.0/objecttypeattribute/%s/%d/move", objectTypeID, attributeID))
+	if err != nil {
+		return err
+	}
+
+	if err = validateResponseCodeExact(response, 200); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // label attributes are kind of special --------------------------------------
 
 func (c *Client) GetLabelAttributeForObjectTypeID(objectTypeID string) (*ObjectTypeAttribute, error) {
