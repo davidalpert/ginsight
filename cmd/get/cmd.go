@@ -41,7 +41,7 @@ var objectSchemaKey = ""
 func getPersistentPreRunE(cmd *cobra.Command, args []string) error {
 	// populate and validate before invoking the subcommand
 	objectSchemaKey = viper.GetString("schema")
-	if objectSchemaKey == "" {
+	if objectSchemaKey == "" && cmd.Name() != "schemas" {
 		return fmt.Errorf("must specify an ObjectSchema; use the --schema flag with a schema key or set the api.schema config value.\n")
 	}
 	return nil
